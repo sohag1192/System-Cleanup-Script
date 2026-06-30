@@ -6,9 +6,60 @@
 This repository contains shell scripts to automate **system cleanup** and **disk space optimization**.  
 It helps free up space by cleaning logs, caches, orphaned packages, and temporary files across Ubuntu/Proxmox servers.
 
+
 ---
 
-## ⚙️ Features
+## ✨ Features 1
+- Clear **Apache2**, **Nginx**, and **Flussonic** logs
+- Truncate all log files in `/var/log`
+- Remove rotated and compressed logs (`.gz`, `.1`, `.2`, etc.)
+- Clean **APT cache** and partial packages
+- Remove orphaned packages (if `deborphan` is installed)
+- Clear user trash (`~/.local/share/Trash`)
+- Safe truncation (`: > file.log`) instead of deletion, so services don’t break
+
+---
+
+## 📥 Installation
+Download the script and make it executable:
+```bash
+wget https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/refs/heads/main/clean_logs.sh
+chmod +x clean_logs.sh 
+./clean_logs.sh 
+```
+---
+
+## ⏰ Automate with Cron
+To schedule automatic cleanup:
+
+1. Edit root’s cron jobs:
+   ```bash
+   sudo crontab -e
+   ```
+
+2. Add one of these schedules:
+   - **Daily at midnight**
+     ```
+     0 0 * * * /usr/local/bin/log_cleanup.sh
+     ```
+   - **Weekly (Sunday at 2 AM)**
+     ```
+     0 2 * * 0 /usr/local/bin/log_cleanup.sh
+     ```
+   - **Monthly (1st day at 3 AM)**
+     ```
+     0 3 1 * * /usr/local/bin/log_cleanup.sh
+     ```
+
+3. Ensure cron is running:
+   ```bash
+   sudo systemctl enable --now cron
+   ```
+
+---
+
+
+## ⚙️ Features 2
 - **[Truncate all log files](guide://action?prefill=Tell%20me%20more%20about%3A%20Truncate%20all%20log%20files)** under `/var/log` (excluding `wtmp` and `btmp`).
 - **[Delete rotated/compressed logs](guide://action?prefill=Tell%20me%20more%20about%3A%20Delete%20rotated%2Fcompressed%20logs)** (`*.gz`, `*.1`, etc.).
 - **[Vacuum systemd journal logs](guide://action?prefill=Tell%20me%20more%20about%3A%20Vacuum%20systemd%20journal%20logs)** older than 7 days.
@@ -18,6 +69,8 @@ It helps free up space by cleaning logs, caches, orphaned packages, and temporar
 - **[Show disk usage after cleanup](guide://action?prefill=Tell%20me%20more%20about%3A%20Show%20disk%20usage%20after%20cleanup)**.
 
 ---
+
+
 
 ## 🚀 Usage
 ### 1. Download the script
