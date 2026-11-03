@@ -5,6 +5,7 @@
 **Production-grade, automated Linux & Proxmox disk cleanup and log optimization tools.**
 
 [![Views (Today / Total)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script/)
+[![Live Web Docs](https://img.shields.io/badge/Web%20Portal-Live%20Site-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)](https://sohag1192.github.io/System-Cleanup-Script/)
 [![GitHub Stars](https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold)](https://github.com/sohag1192/System-Cleanup-Script/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue)](https://github.com/sohag1192/System-Cleanup-Script/network/members)
 [![License](https://img.shields.io/github/license/sohag1192/System-Cleanup-Script?style=for-the-badge&color=green)](LICENSE)
@@ -14,6 +15,7 @@
 <br/>
 
 <p align="center">
+  <a href="https://sohag1192.github.io/System-Cleanup-Script/">🌐 <b>Live Web Portal</b></a> •
   <a href="README.md"><b>English</b></a> •
   <a href="README.bn.md"><b>বাংলা (Bengali)</b></a>
 </p>

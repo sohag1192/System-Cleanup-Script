@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Cleanup & Space Optimization Scripts | Linux & Proxmox</title>
+  <meta name="description" content="Production-grade, battle-tested, automated Linux (Ubuntu/Debian) and Proxmox VE disk cleanup and log optimization tools. Safe truncation without service interruption." />
+  <meta name="author" content="Md. Sohag Rana" />
+  
+  <!-- Open Graph / Meta -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sohag1192.github.io/System-Cleanup-Script/" />
+  <meta property="og:title" content="System Cleanup & Space Optimization Scripts" />
+  <meta property="og:description" content="Safe, automated disk cleanup scripts for Ubuntu, Debian and Proxmox VE." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            dark: {
+              900: '#0b0f17',
+              800: '#111827',
+              700: '#1f2937',
+              600: '#374151',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f17;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+    
+    .glow-green {
+      box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.25);
+    }
+    .glow-card:hover {
+      box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .code-glow {
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-dark-900 text-slate-100 font-sans min-h-screen selection:bg-brand-500 selection:text-white">
+
+  <!-- Background decorative glows -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-brand-500/10 blur-[130px] rounded-full"></div>
+    <div class="absolute top-[40%] -left-32 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full"></div>
+    <div class="absolute top-[70%] -right-32 w-[500px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-brand-600 text-white px-5 py-3 rounded-xl shadow-2xl font-medium border border-brand-400">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-message">Command copied to clipboard!</span>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-dark-900/80 border-b border-dark-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🧹</span>
+        <div>
+          <span class="font-bold text-lg tracking-tight text-white flex items-center gap-2">
+            System Cleanup <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">v2.1</span>
+          </span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+        <a href="#quick-run" class="hover:text-brand-400 transition-colors" data-i18n="nav-quick">Quick Run</a>
+        <a href="#recommendations" class="hover:text-brand-400 transition-colors" data-i18n="nav-best">Best Scripts</a>
+        <a href="#scripts" class="hover:text-brand-400 transition-colors" data-i18n="nav-all">All Scripts</a>
+        <a href="#cron" class="hover:text-brand-400 transition-colors" data-i18n="nav-cron">Cron Generator</a>
+        <a href="#troubleshooting" class="hover:text-brand-400 transition-colors text-amber-400 hover:text-amber-300">Troubleshooting</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <button id="lang-toggle" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-lg border border-dark-600 bg-dark-800 hover:border-brand-500 text-xs font-semibold flex items-center gap-1.5 transition-all text-slate-200">
+          <span class="text-sm">🌐</span>
+          <span id="lang-label">বাংলা</span>
+        </button>
+
+        <!-- GitHub Repo Button -->
+        <a href="https://github.com/sohag1192/System-Cleanup-Script" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 bg-dark-700 hover:bg-dark-600 border border-dark-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all shadow-sm">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span class="hidden sm:inline">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="relative z-10">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 text-center">
+      
+      <!-- Badges Bar -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <a href="https://hits.sh/github.com/sohag1192/System-Cleanup-Script/" target="_blank">
+          <img src="https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937" alt="Views" class="h-6 rounded">
+        </a>
+        <a href="https://github.com/sohag1192/System-Cleanup-Script/stargazers" target="_blank">
+          <img src="https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold" alt="Stars" class="h-6 rounded">
+        </a>
+        <a href="https://github.com/sohag1192/System-Cleanup-Script/network/members" target="_blank">
+          <img src="https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue" alt="Forks" class="h-6 rounded">
+        </a>
+        <span class="h-6 inline-flex items-center px-3 rounded text-xs font-bold uppercase bg-emerald-950 text-emerald-400 border border-emerald-800">MIT Licensed</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+        <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent" data-i18n="hero-title">
+          Clean Up Linux & Proxmox Bloat
+        </span>
+        <br/>
+        <span class="text-slate-100 text-3xl sm:text-4xl lg:text-5xl" data-i18n="hero-sub">Without Crashing Running Services</span>
+      </h1>
+
+      <p class="max-w-3xl mx-auto text-lg sm:text-xl text-slate-300 mb-10 leading-relaxed font-normal" data-i18n="hero-desc">
+        Automated, production-tested shell scripts designed to safely reclaim gigabytes of disk space. Safely truncates active logs, vacuums systemd journals, flushes APT caches, and strictly protects VM backups and templates.
+      </p>
+
+      <!-- Key Value Badges -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-12 text-left">
+        <div class="p-4 rounded-xl bg-dark-800/80 border border-dark-700/80 flex items-start gap-3">
+          <div class="text-emerald-400 text-xl font-bold">🛡️</div>
+          <div>
+            <div class="text-sm font-semibold text-white" data-i18n="val-1-t">Safe Truncation</div>
+            <div class="text-xs text-slate-400" data-i18n="val-1-d">Truncates to 0 bytes without deleting files; zero broken handles.</div>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-dark-800/80 border border-dark-700/80 flex items-start gap-3">
+          <div class="text-blue-400 text-xl font-bold">📦</div>
+          <div>
+            <div class="text-sm font-semibold text-white" data-i18n="val-2-t">Proxmox Safe</div>
+            <div class="text-xs text-slate-400" data-i18n="val-2-d">Strictly keeps Backups, ISOs, and Container templates untouched.</div>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-dark-800/80 border border-dark-700/80 flex items-start gap-3">
+          <div class="text-purple-400 text-xl font-bold">⚡</div>
+          <div>
+            <div class="text-sm font-semibold text-white" data-i18n="val-3-t">Instant One-Liner</div>
+            <div class="text-xs text-slate-400" data-i18n="val-3-d">Directly executable via curl/wget with no manual setup.</div>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-dark-800/80 border border-dark-700/80 flex items-start gap-3">
+          <div class="text-amber-400 text-xl font-bold">⏰</div>
+          <div>
+            <div class="text-sm font-semibold text-white" data-i18n="val-4-t">Cron Automated</div>
+            <div class="text-xs text-slate-400" data-i18n="val-4-d">Ready-to-use cron schedules for automated weekly/daily runs.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Run Terminal Box -->
+      <div id="quick-run" class="max-w-4xl mx-auto text-left rounded-2xl bg-dark-800/90 border border-dark-700 shadow-2xl overflow-hidden glow-green">
+        <!-- Terminal Header with Tabs -->
+        <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-dark-900 border-b border-dark-700 gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
+            <span class="text-xs text-slate-400 font-mono ml-2">bash terminal — quick one-liner</span>
+          </div>
+
+          <div class="flex items-center gap-1.5 p-1 bg-dark-800 rounded-lg border border-dark-700 text-xs font-medium">
+            <button onclick="switchQuickTab('ubuntu')" id="btn-tab-ubuntu" class="px-3 py-1 rounded bg-brand-500 text-white font-semibold transition-all">
+              Ubuntu / Debian
+            </button>
+            <button onclick="switchQuickTab('proxmox')" id="btn-tab-proxmox" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
+              Proxmox VE
+            </button>
+            <button onclick="switchQuickTab('cleaning')" id="btn-tab-cleaning" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
+              Multi-Service (cleaning.sh)
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Body -->
+        <div class="p-5 sm:p-6 font-mono text-sm sm:text-base bg-dark-900/95 code-glow">
+          <div class="text-slate-400 text-xs mb-3 flex items-center justify-between">
+            <span id="quick-desc">⭐ Recommended: log_cleanup.sh (Journals, Logs & Disk Usage Report)</span>
+            <span class="text-brand-400 text-xs font-semibold">● No installation needed</span>
+          </div>
+
+          <!-- Command Display -->
+          <div class="flex items-center justify-between gap-4 p-4 rounded-xl bg-dark-950 border border-dark-700/80 group">
+            <div class="overflow-x-auto text-emerald-400 font-bold whitespace-nowrap py-1">
+              <span class="text-slate-500 select-none">$ </span><span id="quick-cmd">curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash</span>
+            </div>
+            <button onclick="copyCurrentQuickCmd()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-sans text-xs font-bold transition-all shadow-md active:scale-95">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+
+          <!-- Alternative manual download note -->
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 font-sans">
+            <span>Prefer to inspect first? Run: <code class="text-slate-300 font-mono bg-dark-800 px-1.5 py-0.5 rounded" id="quick-wget">wget -O log_cleanup.sh https://raw.githubusercontent.com/...</code></span>
+            <a id="quick-view-link" href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/ubuntu/log_cleanup.sh" target="_blank" class="text-brand-400 hover:underline flex items-center gap-1 font-mono">
+              View Source →
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Best Scripts Recommendations -->
+    <section id="recommendations" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-3xl font-bold text-white mb-3" data-i18n="rec-title">🏆 Which Script is the Best for You?</h2>
+        <p class="text-slate-400 text-sm sm:text-base" data-i18n="rec-sub">
+          We have organized scripts specifically tailored to your operating environment:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Ubuntu Card -->
+        <div class="p-6 sm:p-8 rounded-2xl bg-dark-800 border border-brand-500/40 relative glow-card transition-all">
+          <div class="absolute -top-3 right-6 px-3 py-1 bg-brand-500 text-white font-mono text-xs font-bold rounded-full shadow-lg">
+            ⭐ RECOMMENDED UBUNTU
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-3xl">🐧</span>
+            <div>
+              <h3 class="text-xl font-bold text-white">Ubuntu / Debian Server</h3>
+              <p class="text-xs font-mono text-brand-400">ubuntu/log_cleanup.sh</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-slate-300 mb-6 leading-relaxed" data-i18n="rec-ub-desc">
+            The most balanced and non-destructive script for Linux servers. Vacuums systemd journals older than 7 days, truncates logs safely to 0 bytes without file deletion, cleans APT caches, removes orphaned packages, and displays a clean disk usage delta.
+          </p>
+
+          <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Systemd journals vacuumed (<code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">journalctl --vacuum-time=7d</code>)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Preserves auth & security logs (<code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">wtmp</code> / <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">btmp</code> untouched)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Keeps essential system CLI tools and packages intact</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Shows before-and-after disk usage summary</li>
+          </ul>
+
+          <div class="pt-4 border-t border-dark-700/60 flex items-center justify-between">
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash')" class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-2 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+            <a href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/ubuntu/log_cleanup.sh" target="_blank" class="text-xs text-slate-400 hover:text-white font-mono flex items-center gap-1">
+              Source Code →
+            </a>
+          </div>
+        </div>
+
+        <!-- Proxmox Card -->
+        <div class="p-6 sm:p-8 rounded-2xl bg-dark-800 border border-blue-500/40 relative glow-card transition-all">
+          <div class="absolute -top-3 right-6 px-3 py-1 bg-blue-600 text-white font-mono text-xs font-bold rounded-full shadow-lg">
+            🛡️ 100% STORAGE SAFE
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-3xl">🖧</span>
+            <div>
+              <h3 class="text-xl font-bold text-white">Proxmox VE Hypervisor</h3>
+              <p class="text-xs font-mono text-blue-400">proxmox/proxmox-cleanup.sh</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-slate-300 mb-6 leading-relaxed" data-i18n="rec-px-desc">
+            Specially tailored for Proxmox VE hypervisors. Cleans host node journals, service logs, and apt caches while enforcing strict safety rules to guarantee zero data loss in Proxmox VM storage.
+          </p>
+
+          <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Strictly protects VM & Container Backups (<code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">/var/lib/vz/dump/</code>)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Preserves downloaded ISOs (<code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">/var/lib/vz/template/iso/</code>)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Preserves LXC Container Templates (<code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">template/cache</code>)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Vacuums PVE journal logs and truncates cluster logs safely</li>
+          </ul>
+
+          <div class="pt-4 border-t border-dark-700/60 flex items-center justify-between">
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash')" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-2 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+            <a href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/proxmox/proxmox-cleanup.sh" target="_blank" class="text-xs text-slate-400 hover:text-white font-mono flex items-center gap-1">
+              Source Code →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complete Scripts Catalog -->
+    <section id="scripts" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white" data-i18n="cat-title">📁 Complete Scripts Catalog</h2>
+          <p class="text-slate-400 text-sm mt-1" data-i18n="cat-sub">Explore all scripts available in the repository</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="filterCategory('all')" id="filter-all" class="px-3.5 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-bold transition-all">All (7)</button>
+          <button onclick="filterCategory('ubuntu')" id="filter-ubuntu" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Ubuntu (5)</button>
+          <button onclick="filterCategory('proxmox')" id="filter-proxmox" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Proxmox (2)</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="scripts-container">
+        
+        <!-- Script 1: log_cleanup.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-brand-500/50 transition-all flex flex-col justify-between" data-category="ubuntu">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-brand-500/20 text-brand-400 font-semibold border border-brand-500/30">⭐ Best Ubuntu</span>
+              <span class="text-xs text-slate-400 font-mono">ubuntu/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">log_cleanup.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Advanced log cleaner that vacuums systemd journals, removes rotated logs, cleans apt cache, safely truncates active logs, and displays before/after disk stats.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Ubuntu / Debian / Mint</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 2: cleaning.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-brand-500/50 transition-all flex flex-col justify-between" data-category="ubuntu">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-400 font-semibold border border-cyan-500/30">Multi-Service</span>
+              <span class="text-xs text-slate-400 font-mono">ubuntu/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">cleaning.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Multi-daemon cleaner. Cleans dedicated logs for <strong>Nginx</strong>, <strong>Apache2</strong>, <strong>MySQL/MariaDB</strong>, and <strong>Flussonic</strong> alongside general system logs.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Web/Media Servers (Nginx/Flussonic)</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 3: proxmox-cleanup.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-blue-500/50 transition-all flex flex-col justify-between" data-category="proxmox">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">⭐ Best Proxmox</span>
+              <span class="text-xs text-slate-400 font-mono">proxmox/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">proxmox-cleanup.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Engineered exclusively for Proxmox VE hosts. Strictly isolates VM backup archives, templates, and ISO images from deletion while freeing gigabytes of journal logs.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Proxmox VE 7.x & 8.x</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 4: clean_up.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-brand-500/50 transition-all flex flex-col justify-between" data-category="ubuntu">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-400 font-semibold border border-purple-500/30">Streaming Safe</span>
+              <span class="text-xs text-slate-400 font-mono">ubuntu/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">clean_up.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Standard cleanup script with specific checks for Nginx and RTMP streaming log directories, user trash directories, and APT archive pruning.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Ubuntu / RTMP Servers</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/clean_up.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 5: clean_logs.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-brand-500/50 transition-all flex flex-col justify-between" data-category="ubuntu">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-slate-500/20 text-slate-300 font-semibold border border-slate-500/30">Lightweight</span>
+              <span class="text-xs text-slate-400 font-mono">ubuntu/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">clean_logs.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Minimalist bash script focused on clearing log files, deborphan packages, and APT caches without modifying other system configurations.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Ubuntu Standard</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/clean_logs.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 6: clean-logs.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-brand-500/50 transition-all flex flex-col justify-between" data-category="ubuntu">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-slate-500/20 text-slate-300 font-semibold border border-slate-500/30">POSIX sh</span>
+              <span class="text-xs text-slate-400 font-mono">ubuntu/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">clean-logs.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Standard POSIX sh compatible log and cache cleaner for older or minimal Linux systems without bash-specific syntax dependencies.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">POSIX / Minimal OS</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/clean-logs.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script 7: proxmox_clean.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-blue-500/50 transition-all flex flex-col justify-between" data-category="proxmox">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">Alternate PVE</span>
+              <span class="text-xs text-slate-400 font-mono">proxmox/</span>
+            </div>
+            <h3 class="text-lg font-bold text-white font-mono mb-2">proxmox_clean.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Alternative Proxmox cleanup script for quick log truncation, trash emptying, and APT cache maintenance.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Target:</span>
+              <span class="font-medium text-slate-200">Proxmox Nodes</span>
+            </div>
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox_clean.sh | sudo bash')" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Cron Automation Section -->
+    <section id="cron" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
+      <div class="rounded-2xl bg-dark-800 border border-dark-700 p-6 sm:p-10 relative overflow-hidden">
+        <div class="max-w-3xl">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20">
+            ⏰ Automated Maintenance
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-4 mb-3" data-i18n="cron-title">
+            Interactive Crontab Generator
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base mb-6" data-i18n="cron-desc">
+            Set and forget! Select your script and preferred schedule to generate an automatic cron job command:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">Select Script:</label>
+            <select id="cron-script" onchange="updateCronCommand()" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              <option value="/root/log_cleanup.sh">ubuntu/log_cleanup.sh (Recommended)</option>
+              <option value="/root/cleaning.sh">ubuntu/cleaning.sh (Multi-Service)</option>
+              <option value="/root/proxmox-cleanup.sh">proxmox/proxmox-cleanup.sh (Proxmox)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">Select Frequency:</label>
+            <select id="cron-freq" onchange="updateCronCommand()" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              <option value="0 3 * * *">Daily at 3:00 AM (Recommended)</option>
+              <option value="0 0 * * *">Daily at Midnight (00:00)</option>
+              <option value="0 2 * * 0">Weekly (Every Sunday at 2:00 AM)</option>
+              <option value="0 3 1 * *">Monthly (1st Day of Month at 3:00 AM)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">Log Output File:</label>
+            <input type="text" id="cron-log" value="/var/log/system_cleanup.log" oninput="updateCronCommand()" class="w-full bg-dark-900 border border-dark-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-500 font-mono text-xs" />
+          </div>
+        </div>
+
+        <!-- Generated Cron Output -->
+        <div class="p-4 rounded-xl bg-dark-900 border border-dark-700 font-mono text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="overflow-x-auto text-emerald-400 font-semibold py-1">
+            <span id="cron-result">0 3 * * * /root/log_cleanup.sh >> /var/log/system_cleanup.log 2>&1</span>
+          </div>
+          <button onclick="copyGeneratedCron()" class="flex-shrink-0 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-sans font-bold flex items-center justify-center gap-1.5 transition-all">
+            <span>Copy Cron Line</span>
+          </button>
+        </div>
+
+        <div class="mt-4 text-xs text-slate-400">
+          💡 <strong>How to apply:</strong> Run <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300 font-mono">sudo crontab -e</code> and paste the generated line at the bottom of your file.
+        </div>
+      </div>
+    </section>
+
+    <!-- Troubleshooting Section (Crucial dos2unix fix) -->
+    <section id="troubleshooting" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
+      <div class="p-6 sm:p-8 rounded-2xl bg-amber-950/20 border border-amber-500/30">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">🔧</span>
+          <div>
+            <h2 class="text-2xl font-bold text-amber-300" data-i18n="trouble-title">
+              Troubleshooting: Script Not Working or Line Ending Errors?
+            </h2>
+            <p class="text-xs font-mono text-amber-400/90">Fixing Windows CRLF ($'\r') on Linux servers</p>
+          </div>
+        </div>
+
+        <p class="text-sm text-slate-300 mb-6 leading-relaxed" data-i18n="trouble-desc">
+          If you downloaded or edited the script on Windows and transferred it to Linux, you may encounter errors like:
+        </p>
+
+        <!-- Error simulation box -->
+        <div class="p-4 rounded-xl bg-dark-900/90 border border-red-500/40 font-mono text-xs text-red-400 space-y-1 mb-6">
+          <div>$ bash cleaning.sh</div>
+          <div>cleaning.sh: line 9: $'\r': command not found</div>
+          <div>: No such file or directorylocal/nginx/logs/access.log</div>
+          <div>cleaning.sh: line 95: syntax error: unexpected end of file</div>
+        </div>
+
+        <!-- Quick 2-Step Fix -->
+        <h3 class="text-sm font-bold text-white mb-3" data-i18n="trouble-fix-title">✅ The 2-Step Solution (dos2unix):</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-dark-900 border border-dark-700">
+            <div class="text-xs font-semibold text-slate-400 mb-2">Option A: Using dos2unix (Recommended)</div>
+            <pre class="font-mono text-xs text-emerald-400 bg-dark-950 p-3 rounded-lg overflow-x-auto mb-3">sudo apt-get install -y dos2unix
+dos2unix cleaning.sh
+sudo bash cleaning.sh</pre>
+            <button onclick="copyText('sudo apt-get install -y dos2unix && dos2unix cleaning.sh')" class="w-full py-1.5 bg-dark-800 hover:bg-dark-700 text-slate-200 text-xs font-semibold rounded transition-all">
+              Copy Command
+            </button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-dark-900 border border-dark-700">
+            <div class="text-xs font-semibold text-slate-400 mb-2">Option B: Instant sed (No package install)</div>
+            <pre class="font-mono text-xs text-emerald-400 bg-dark-950 p-3 rounded-lg overflow-x-auto mb-3">sed -i 's/\r$//' cleaning.sh
+chmod +x cleaning.sh
+sudo ./cleaning.sh</pre>
+            <button onclick="copyText('sed -i \'s/\\r$//\' cleaning.sh && chmod +x cleaning.sh && sudo ./cleaning.sh')" class="w-full py-1.5 bg-dark-800 hover:bg-dark-700 text-slate-200 text-xs font-semibold rounded transition-all">
+              Copy Command
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Maintainer Info -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800 text-center">
+      <div class="max-w-xl mx-auto p-6 rounded-2xl bg-dark-800/60 border border-dark-700">
+        <div class="text-3xl mb-3">👤</div>
+        <h3 class="text-lg font-bold text-white">Md. Sohag Rana</h3>
+        <p class="text-xs text-brand-400 font-medium mb-4">Network & IT Infrastructure Manager, Sarker Net</p>
+        
+        <div class="flex items-center justify-center gap-4 text-xs font-semibold">
+          <a href="https://t.me/sohag1192" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all flex items-center gap-1.5">
+            <span>💬 Telegram: @sohag1192</span>
+          </a>
+          <a href="mailto:sohag1192@gmail.com" class="px-4 py-2 rounded-lg bg-dark-700 text-slate-300 border border-dark-600 hover:bg-dark-600 transition-all flex items-center gap-1.5">
+            <span>📧 Email Maintainer</span>
+          </a>
+          <a href="https://github.com/sohag1192/System-Cleanup-Script" target="_blank" class="px-4 py-2 rounded-lg bg-dark-700 text-slate-300 border border-dark-600 hover:bg-dark-600 transition-all flex items-center gap-1.5">
+            <span>⭐ Star on GitHub</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dark-800 bg-dark-950 py-8 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        © 2026 <a href="https://github.com/sohag1192" class="text-slate-300 font-semibold hover:text-white">Md. Sohag Rana</a>. MIT License.
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/README.md" class="hover:text-brand-400">English README</a>
+        <span>•</span>
+        <a href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/README.bn.md" class="hover:text-brand-400">বাংলা ডকুমেন্টেশন</a>
+        <span>•</span>
+        <a href="https://github.com/sohag1192/System-Cleanup-Script" class="hover:text-brand-400">GitHub Repository</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Quick Tab State
+    const quickTabs = {
+      ubuntu: {
+        cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash",
+        wget: "wget -O log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh",
+        desc: "⭐ Recommended: log_cleanup.sh (Journals, Logs & Disk Usage Report)",
+        link: "https://github.com/sohag1192/System-Cleanup-Script/blob/main/ubuntu/log_cleanup.sh"
+      },
+      proxmox: {
+        cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash",
+        wget: "wget -O proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh",
+        desc: "🛡️ Storage Safe: proxmox-cleanup.sh (Keeps Backups, ISOs & CT Templates Safe)",
+        link: "https://github.com/sohag1192/System-Cleanup-Script/blob/main/proxmox/proxmox-cleanup.sh"
+      },
+      cleaning: {
+        cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh | sudo bash",
+        wget: "wget -O cleaning.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh",
+        desc: "🚀 Multi-Service: cleaning.sh (Nginx, Apache, MySQL, Flussonic, Trash & APT)",
+        link: "https://github.com/sohag1192/System-Cleanup-Script/blob/main/ubuntu/cleaning.sh"
+      }
+    };
+
+    let activeQuickTab = 'ubuntu';
+
+    function switchQuickTab(tab) {
+      activeQuickTab = tab;
+      const data = quickTabs[tab];
+      document.getElementById('quick-cmd').textContent = data.cmd;
+      document.getElementById('quick-desc').textContent = data.desc;
+      document.getElementById('quick-wget').textContent = data.wget;
+      document.getElementById('quick-view-link').href = data.link;
+
+      // Update Tab Buttons UI
+      const tabs = ['ubuntu', 'proxmox', 'cleaning'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('btn-tab-' + t);
+        if (t === tab) {
+          btn.className = "px-3 py-1 rounded bg-brand-500 text-white font-semibold transition-all";
+        } else {
+          btn.className = "px-3 py-1 rounded text-slate-400 hover:text-white transition-all";
+        }
+      });
+    }
+
+    function copyCurrentQuickCmd() {
+      const cmd = quickTabs[activeQuickTab].cmd;
+      copyText(cmd);
+    }
+
+    // Copy to clipboard helper
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard!");
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        showToast("Copied to clipboard!");
+      });
+    }
+
+    // Toast notification
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Filter scripts category
+    function filterCategory(category) {
+      const cards = document.querySelectorAll('.script-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update Filter buttons
+      ['all', 'ubuntu', 'proxmox'].forEach(c => {
+        const btn = document.getElementById('filter-' + c);
+        if (c === category) {
+          btn.className = "px-3.5 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-bold transition-all";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all";
+        }
+      });
+    }
+
+    // Cron Generator
+    function updateCronCommand() {
+      const script = document.getElementById('cron-script').value;
+      const freq = document.getElementById('cron-freq').value;
+      const log = document.getElementById('cron-log').value;
+      const fullCmd = `${freq} ${script} >> ${log} 2>&1`;
+      document.getElementById('cron-result').textContent = fullCmd;
+    }
+
+    function copyGeneratedCron() {
+      const cmd = document.getElementById('cron-result').textContent;
+      copyText(cmd);
+    }
+
+    // Bilingual Support (EN / BN)
+    let currentLang = 'en';
+    const translations = {
+      en: {
+        'nav-quick': 'Quick Run',
+        'nav-best': 'Best Scripts',
+        'nav-all': 'All Scripts',
+        'nav-cron': 'Cron Generator',
+        'hero-title': 'Clean Up Linux & Proxmox Bloat',
+        'hero-sub': 'Without Crashing Running Services',
+        'hero-desc': 'Automated, production-tested shell scripts designed to safely reclaim gigabytes of disk space. Safely truncates active logs, vacuums systemd journals, flushes APT caches, and strictly protects VM backups and templates.',
+        'val-1-t': 'Safe Truncation',
+        'val-1-d': 'Truncates to 0 bytes without deleting files; zero broken handles.',
+        'val-2-t': 'Proxmox Safe',
+        'val-2-d': 'Strictly keeps Backups, ISOs, and Container templates untouched.',
+        'val-3-t': 'Instant One-Liner',
+        'val-3-d': 'Directly executable via curl/wget with no manual setup.',
+        'val-4-t': 'Cron Automated',
+        'val-4-d': 'Ready-to-use cron schedules for automated weekly/daily runs.',
+        'rec-title': '🏆 Which Script is the Best for You?',
+        'rec-sub': 'We have organized scripts specifically tailored to your operating environment:',
+        'rec-ub-desc': 'The most balanced and non-destructive script for Linux servers. Vacuums systemd journals older than 7 days, truncates logs safely to 0 bytes without file deletion, cleans APT caches, removes orphaned packages, and displays a clean disk usage delta.',
+        'rec-px-desc': 'Specially tailored for Proxmox VE hypervisors. Cleans host node journals, service logs, and apt caches while enforcing strict safety rules to guarantee zero data loss in Proxmox VM storage.',
+        'cat-title': '📁 Complete Scripts Catalog',
+        'cat-sub': 'Explore all scripts available in the repository',
+        'cron-title': 'Interactive Crontab Generator',
+        'cron-desc': 'Set and forget! Select your script and preferred schedule to generate an automatic cron job command:',
+        'trouble-title': 'Troubleshooting: Script Not Working or Line Ending Errors?',
+        'trouble-desc': 'If you downloaded or edited the script on Windows and transferred it to Linux, you may encounter errors like:',
+        'trouble-fix-title': '✅ The 2-Step Solution (dos2unix):',
+        'lang-btn': 'বাংলা'
+      },
+      bn: {
+        'nav-quick': 'কুইক রান',
+        'nav-best': 'সেরা স্ক্রিপ্ট',
+        'nav-all': 'সকল স্ক্রিপ্ট',
+        'nav-cron': 'ক্রন জেনারেটর',
+        'hero-title': 'লিনাক্স ও Proxmox সার্ভারের অপ্রয়োজনীয় ডাটা সাফ করুন',
+        'hero-sub': 'রানিং সার্ভিস বন্ধ না করেই নিরাপদ ক্লিনআপ',
+        'hero-desc': 'উৎপাদনমুখী ও পরীক্ষিত শেল স্ক্রিপ্ট যা নিরাপদে গিগাবাইট স্পেস মুক্ত করে। সিস্টেম লগ ট্রাঙ্কেট করে, systemd জার্নাল ভ্যাকুয়াম করে, APT ক্যাশ পরিষ্কার করে এবং ব্যাকআপ ও টেমপ্লেট সম্পূর্ণ সুরক্ষিত রাখে।',
+        'val-1-t': 'নিরাপদ ট্রাঙ্কেশন',
+        'val-1-d': 'ফাইল মুছে না ফেলে ০ বাইটে নামিয়ে আনে; সার্ভিস বন্ধ হয় না।',
+        'val-2-t': 'Proxmox স্টোরেজ সুরক্ষিত',
+        'val-2-d': 'ব্যাকআপ ফাইল, ISO ও কনটেইনার টেমপ্লেট ১০০% সুরক্ষিত থাকে।',
+        'val-3-t': 'এক ক্লিকে সরাসরি রান',
+        'val-3-d': 'curl বা wget দিয়ে কোনো পূর্ব প্রস্তুতি ছাড়াই সরাসরি চালানো যায়।',
+        'val-4-t': 'ক্রন অটোমেশন',
+        'val-4-d': 'দৈনিক বা সাপ্তাহিক শিডিউলে স্বয়ংক্রিয় ক্লিনআপের সুবিধা।',
+        'rec-title': '🏆 আপনার জন্য কোন স্ক্রিপ্টটি সবচেয়ে সেরা?',
+        'rec-sub': 'আপনার সার্ভার পরিবেশ অনুযায়ী সেরা স্ক্রিপ্ট নির্বাচন করুন:',
+        'rec-ub-desc': 'উবুন্টু/ডেবিয়ান সার্ভারের জন্য সবচেয়ে নিরাপদ ও ভারসাম্যপূর্ণ স্ক্রিপ্ট। ৭ দিনের পুরনো systemd জার্নাল পরিষ্কার করে, ফাইল ডিলিট না করে ট্রাঙ্কেট করে এবং ডিস্ক স্পেস ব্যবহারের রিপোর্ট দেখায়।',
+        'rec-px-desc': 'Proxmox VE হাইপারভাইজারের জন্য বিশেষভাবে তৈরি। হোস্ট নোডের জার্নাল ও সার্ভিস লগ সাফ করে, কিন্তু ব্যাকআপ, ISO ও কনটেইনার টেমপ্লেটের কোনো ফাইলে হাত দেয় না।',
+        'cat-title': '📁 সকল স্ক্রিপ্টের ক্যাটালগ',
+        'cat-sub': 'রিপোজিটরির সবকটি টেস্টেড স্ক্রিপ্টের তালিকা দেখুন',
+        'cron-title': 'ইন্টারেক্টিভ ক্রনট্যাব জেনারেটর',
+        'cron-desc': 'শিডিউল অনুযায়ী স্বয়ংক্রিয় ক্লিনআপ সেট করতে স্ক্রিপ্ট ও সময় নির্বাচন করুন:',
+        'trouble-title': 'সমস্যা সমাধান: স্ক্রিপ্ট কাজ করছে না বা লাইনে এরর দিচ্ছে?',
+        'trouble-desc': 'উইন্ডোজে ডাউনলোড বা এডিট করে লিনাক্সে পাঠালে CRLF এরর যেমন $’\\r’ command not found দেখা দিতে পারে:',
+        'trouble-fix-title': '✅ মাত্র ২টি ধাপে সমাধান (dos2unix):',
+        'lang-btn': 'English'
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'bn' : 'en';
+      const dict = translations[currentLang];
+      
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+
+      document.getElementById('lang-label').textContent = dict['lang-btn'];
+    }
+  </script>
+</body>
+</html>
