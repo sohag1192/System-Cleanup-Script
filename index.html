@@ -7,8 +7,8 @@
   <!-- Primary SEO Meta Tags -->
   <title>Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization</title>
   <meta name="title" content="Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization" />
-  <meta name="description" content="Production-grade, automated Linux (Ubuntu, Debian), Proxmox VE, and Docker disk cleanup scripts. Safely truncate active logs, vacuum systemd journals, and clean caches without downtime." />
-  <meta name="keywords" content="linux cleanup script, ubuntu disk cleanup, proxmox log cleanup, proxmox cleanup script, docker log cleanup, truncate log files, journalctl vacuum, free disk space ubuntu, clean apt cache, systemd log clean, debian disk space, sohag1192" />
+  <meta name="description" content="Production-grade, automated Linux (Ubuntu, Debian), Proxmox VE, Docker, and Cacti disk cleanup scripts. Safely truncate active logs, vacuum systemd journals, and clean caches without downtime." />
+  <meta name="keywords" content="linux cleanup script, ubuntu disk cleanup, proxmox log cleanup, proxmox cleanup script, docker log cleanup, cacti log cleanup, cacti log clean, spine log clean, truncate log files, journalctl vacuum, free disk space ubuntu, clean apt cache, systemd log clean, debian disk space, sohag1192" />
   <meta name="author" content="Md. Sohag Rana" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="theme-color" content="#0b0f17" />
@@ -316,6 +316,9 @@
             <button onclick="switchQuickTab('docker')" id="btn-tab-docker" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
               Docker Engine
             </button>
+            <button onclick="switchQuickTab('cacti')" id="btn-tab-cacti" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
+              Cacti Monitoring
+            </button>
             <button onclick="switchQuickTab('cleaning')" id="btn-tab-cleaning" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
               Multi-Service
             </button>
@@ -365,7 +368,7 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Ubuntu Card -->
         <div class="p-6 rounded-2xl bg-dark-800 border border-brand-500/40 relative glow-card transition-all flex flex-col justify-between">
           <div>
@@ -473,6 +476,42 @@
             </a>
           </div>
         </div>
+
+        <!-- Cacti Card -->
+        <div class="p-6 rounded-2xl bg-dark-800 border border-amber-500/40 relative glow-card transition-all flex flex-col justify-between">
+          <div>
+            <div class="inline-block px-3 py-1 bg-amber-600 text-white font-mono text-xs font-bold rounded-full shadow-lg mb-4">
+              🌵 SAFE CACTI &amp; SPINE
+            </div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-3xl">🌵</span>
+              <div>
+                <h3 class="text-lg font-bold text-white">Cacti Monitoring</h3>
+                <p class="text-xs font-mono text-amber-400">cacti/cacti_log.sh</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-5 leading-relaxed" data-i18n="rec-cacti-desc">
+              🌵 <strong>Zero-disruption Cacti cleaner:</strong> Safely truncates <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">cacti.log</code> and Spine poller logs without breaking file permissions, removes rotated archives, and strictly preserves all <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">.rrd</code> performance graphs.
+            </p>
+
+            <ul class="space-y-2 text-xs text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Truncates active <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">cacti.log</code> &amp; <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">spine.log</code></li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Strictly protects all <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">.rrd</code> graph metric files</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Deletes compressed <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">.gz</code> and rotated log archives</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Cleans Cacti boost cache &amp; temp export spool</li>
+            </ul>
+          </div>
+
+          <div class="pt-4 border-t border-dark-700/60 flex items-center justify-between">
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh | sudo bash', this)" class="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+              <span>Copy One-Liner</span>
+            </button>
+            <a href="https://github.com/sohag1192/System-Cleanup-Script/blob/main/cacti/cacti_log.sh" target="_blank" class="text-xs text-slate-400 hover:text-white font-mono">
+              Source →
+            </a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -494,6 +533,7 @@
               <th class="py-3.5 px-4 font-semibold text-emerald-400">ubuntu/log_cleanup.sh ⭐</th>
               <th class="py-3.5 px-4 font-semibold text-cyan-400">docker/Docker_log.sh 🐳</th>
               <th class="py-3.5 px-4 font-semibold text-blue-400">proxmox/proxmox-cleanup.sh ⭐</th>
+              <th class="py-3.5 px-4 font-semibold text-amber-400">cacti/cacti_log.sh 🌵</th>
               <th class="py-3.5 px-4 font-semibold text-purple-400">ubuntu/cleaning.sh</th>
             </tr>
           </thead>
@@ -503,12 +543,22 @@
               <td class="py-3 px-4 text-emerald-400">✅ <code class="font-mono text-xs">truncate -s 0</code></td>
               <td class="py-3 px-4 text-slate-500">❌ (Docker logs only)</td>
               <td class="py-3 px-4 text-emerald-400">✅ <code class="font-mono text-xs">truncate -s 0</code></td>
+              <td class="py-3 px-4 text-slate-500">❌ (Cacti logs only)</td>
               <td class="py-3 px-4 text-emerald-400">✅ <code class="font-mono text-xs">truncate -s 0</code></td>
+            </tr>
+            <tr class="hover:bg-dark-700/30 transition-colors bg-amber-950/10">
+              <td class="py-3 px-4 font-medium text-amber-300">Cacti Poller &amp; Spine Log Truncation</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
+              <td class="py-3 px-4 text-amber-400 font-bold">✅ <code class="font-mono text-xs">truncate -s 0</code></td>
+              <td class="py-3 px-4 text-emerald-400">✅ (Auto-detects)</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
               <td class="py-3 px-4 font-medium text-slate-200">Container JSON Log Truncation</td>
               <td class="py-3 px-4 text-emerald-400">✅ (Automatic)</td>
               <td class="py-3 px-4 text-cyan-400 font-bold">✅ <code class="font-mono text-xs">*-json.log</code></td>
+              <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-red-400">❌</td>
             </tr>
@@ -518,6 +568,7 @@
               <td class="py-3 px-4 text-cyan-400 font-bold">✅ <code class="font-mono text-xs">docker prune</code></td>
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-red-400">❌</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
               <td class="py-3 px-4 font-medium text-slate-200">Systemd Journal Vacuum</td>
@@ -525,12 +576,14 @@
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅ <code class="font-mono text-xs">--vacuum-time=7d</code></td>
               <td class="py-3 px-4 text-red-400">❌</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
               <td class="py-3 px-4 font-medium text-slate-200"><code class="font-mono text-xs">wtmp</code> / <code class="font-mono text-xs">btmp</code> Login Safe</td>
               <td class="py-3 px-4 text-emerald-400 font-semibold">✅ (Protected)</td>
               <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
               <td class="py-3 px-4 text-emerald-400 font-semibold">✅ (Protected)</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
               <td class="py-3 px-4 text-red-400">❌</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
@@ -539,12 +592,14 @@
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅ Deleted</td>
               <td class="py-3 px-4 text-emerald-400">✅ Deleted</td>
+              <td class="py-3 px-4 text-emerald-400">✅ Deleted</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
               <td class="py-3 px-4 font-medium text-slate-200">APT Cache &amp; Autoclean</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
@@ -552,6 +607,7 @@
               <td class="py-3 px-4 text-emerald-400">✅ Safe</td>
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅ Safe</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
@@ -559,6 +615,7 @@
               <td class="py-3 px-4 text-emerald-400">✅</td>
               <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
+              <td class="py-3 px-4 text-red-400">❌</td>
               <td class="py-3 px-4 text-emerald-400">✅</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors bg-blue-950/20">
@@ -567,12 +624,22 @@
               <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
               <td class="py-3 px-4 text-blue-400 font-bold">✅ 100% Untouched</td>
               <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+            </tr>
+            <tr class="hover:bg-dark-700/30 transition-colors bg-emerald-950/20">
+              <td class="py-3 px-4 font-medium text-emerald-300">Protects RRA Graph Metrics (<code class="font-mono text-xs">.rrd</code>)</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+              <td class="py-3 px-4 text-slate-500 font-mono">N/A</td>
+              <td class="py-3 px-4 text-emerald-400 font-bold">✅ 100% Untouched</td>
+              <td class="py-3 px-4 text-emerald-400 font-bold">✅ Untouched</td>
             </tr>
             <tr class="hover:bg-dark-700/30 transition-colors">
               <td class="py-3 px-4 font-medium text-slate-200">Displays Disk Report</td>
               <td class="py-3 px-4 text-emerald-400 font-bold">✅ <code class="font-mono text-xs">df -h</code></td>
               <td class="py-3 px-4 text-cyan-400 font-bold">✅ <code class="font-mono text-xs">docker system df</code></td>
               <td class="py-3 px-4 text-red-400">❌</td>
+              <td class="py-3 px-4 text-amber-400 font-bold">✅ <code class="font-mono text-xs">df -h</code></td>
               <td class="py-3 px-4 text-red-400">❌</td>
             </tr>
           </tbody>
@@ -600,6 +667,8 @@
 │   └── <span class="text-slate-200">proxmox_clean.sh</span>         <span class="text-slate-400"># Lightweight Proxmox cleanup</span>
 ├── <span class="text-cyan-400 font-semibold">docker/</span>                      <span class="text-slate-500"># Docker Optimization &amp; Cleanup</span>
 │   └── <span class="text-white font-bold">Docker_log.sh</span>            <span class="text-cyan-400">🐳 Truncates container JSON logs &amp; prunes cache/images</span>
+├── <span class="text-amber-400 font-semibold">cacti/</span>                       <span class="text-slate-500"># Cacti Network Monitoring Cleanup Scripts</span>
+│   └── <span class="text-white font-bold">cacti_log.sh</span>             <span class="text-amber-400">🌵 Truncates Cacti logs, Spine poller logs &amp; cache</span>
 ├── <span class="text-purple-400">upload.bat</span>                   <span class="text-slate-500"># Windows batch script for automated git commit &amp; push</span>
 ├── <span class="text-slate-400">.gitattributes</span>               <span class="text-slate-500"># Enforces Unix LF line endings for shell scripts</span>
 ├── <span class="text-slate-400">LICENSE</span>                      <span class="text-slate-500"># MIT License</span>
@@ -608,18 +677,19 @@
       </div>
     </section>
 
-    <!-- Complete Scripts Catalog (8 Scripts total) -->
+    <!-- Complete Scripts Catalog (9 Scripts total) -->
     <section id="scripts" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h2 class="text-2xl sm:text-3xl font-bold text-white" data-i18n="cat-title">📁 Complete Scripts Catalog</h2>
-          <p class="text-slate-400 text-sm mt-1" data-i18n="cat-sub">Explore all 8 scripts available in the repository</p>
+          <p class="text-slate-400 text-sm mt-1" data-i18n="cat-sub">Explore all 9 scripts available in the repository</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="filterCategory('all')" id="filter-all" class="px-3.5 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-bold transition-all">All (8)</button>
+          <button onclick="filterCategory('all')" id="filter-all" class="px-3.5 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-bold transition-all">All (9)</button>
           <button onclick="filterCategory('ubuntu')" id="filter-ubuntu" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Ubuntu (5)</button>
           <button onclick="filterCategory('proxmox')" id="filter-proxmox" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Proxmox (2)</button>
           <button onclick="filterCategory('docker')" id="filter-docker" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Docker (1)</button>
+          <button onclick="filterCategory('cacti')" id="filter-cacti" class="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-bold transition-all">Cacti (1)</button>
         </div>
       </div>
 
@@ -658,6 +728,25 @@
           </div>
           <div class="space-y-2 pt-3 border-t border-dark-700/60">
             <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh | sudo bash', this)" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+              <span>Copy One-Liner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Script: cacti_log.sh -->
+        <div class="script-card p-5 rounded-xl bg-dark-800/90 border border-dark-700 hover:border-amber-500/50 transition-all flex flex-col justify-between" data-category="cacti">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 font-semibold border border-amber-500/30">🌵 Cacti Monitoring</span>
+              <span class="text-xs text-slate-400 font-mono">cacti/</span>
+            </div>
+            <h3 class="text-base font-bold text-white font-mono mb-2">cacti_log.sh</h3>
+            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+              Safely truncates Cacti poller &amp; Spine logs without breaking file permissions. Strictly isolates and preserves all <code class="bg-dark-900 px-1 py-0.5 rounded text-slate-300">.rrd</code> performance graph files.
+            </p>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-dark-700/60">
+            <button onclick="copyText('curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh | sudo bash', this)" class="w-full py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-xs font-semibold text-slate-200 hover:text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer">
               <span>Copy One-Liner</span>
             </button>
           </div>
@@ -792,8 +881,8 @@
         </p>
       </div>
 
-      <!-- Cron Method 1: Instant One-Liners (Ubuntu, Proxmox, Docker) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+      <!-- Cron Method 1: Instant One-Liners (Ubuntu, Proxmox, Docker, Cacti) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <!-- Ubuntu Cron One-Liner -->
         <div class="p-5 rounded-2xl bg-dark-800 border border-dark-700 flex flex-col justify-between">
           <div>
@@ -850,6 +939,25 @@
             <span>Copy Docker One-Liner</span>
           </button>
         </div>
+
+        <!-- Cacti Cron One-Liner -->
+        <div class="p-5 rounded-2xl bg-dark-800 border border-dark-700 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">Cacti Server</span>
+              <span class="text-xs text-slate-400">Daily 3:15 AM</span>
+            </div>
+            <h3 class="text-sm font-bold text-white mb-2">⚡ Instant One-Liner</h3>
+            <p class="text-xs text-slate-300 mb-3">
+              Downloads to <code class="font-mono text-amber-400 bg-dark-900 px-1 py-0.5 rounded">/root/cacti_log.sh</code> and auto-adds to crontab:
+            </p>
+            <pre class="p-2.5 rounded-xl bg-dark-950 font-mono text-xs text-amber-400 overflow-x-auto mb-3">sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh &amp;&amp; sudo chmod +x /root/cacti_log.sh
+(sudo crontab -l 2>/dev/null | grep -v "cacti_log.sh"; echo "15 3 * * * /root/cacti_log.sh >> /var/log/cacti_cleanup_cron.log 2>&1") | sudo crontab -</pre>
+          </div>
+          <button onclick="copyText('sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh && sudo chmod +x /root/cacti_log.sh && (sudo crontab -l 2>/dev/null | grep -v &quot;cacti_log.sh&quot;; echo &quot;15 3 * * * /root/cacti_log.sh >> /var/log/cacti_cleanup_cron.log 2>&1&quot;) | sudo crontab -', this)" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <span>Copy Cacti One-Liner</span>
+          </button>
+        </div>
       </div>
 
       <!-- Cron Management Tools: Remove, cron.d, Verify -->
@@ -860,7 +968,7 @@
             <span>🗑️ Remove from Cron</span>
           </div>
           <p class="text-xs text-slate-300 mb-3">Instantly remove scheduled cleanup jobs using <code class="font-mono text-slate-200">sed</code>:</p>
-          <pre id="cron-cmd-remove" class="p-2.5 rounded bg-dark-950 font-mono text-xs text-red-400 overflow-x-auto mb-2">sudo crontab -l | sed '/cleanup.*\.sh\|Docker_log\.sh/d' | sudo crontab -</pre>
+          <pre id="cron-cmd-remove" class="p-2.5 rounded bg-dark-950 font-mono text-xs text-red-400 overflow-x-auto mb-2">sudo crontab -l | sed '/cleanup.*\.sh\|Docker_log\.sh\|cacti_log\.sh/d' | sudo crontab -</pre>
           <button onclick="copyFromElement('cron-cmd-remove', this)" class="w-full py-1.5 bg-dark-800 hover:bg-dark-700 text-red-300 text-xs font-semibold rounded transition-all cursor-pointer">
             Copy Remove Command
           </button>
@@ -905,6 +1013,7 @@
               <option value="/root/log_cleanup.sh">ubuntu/log_cleanup.sh (Recommended)</option>
               <option value="/root/proxmox-cleanup.sh">proxmox/proxmox-cleanup.sh (Proxmox)</option>
               <option value="/root/Docker_log.sh">docker/Docker_log.sh (Docker Engine)</option>
+              <option value="/root/cacti_log.sh">cacti/cacti_log.sh (Cacti Monitoring)</option>
               <option value="/root/cleaning.sh">ubuntu/cleaning.sh (Multi-Service)</option>
             </select>
           </div>
@@ -1113,10 +1222,15 @@
         rootCmd: "sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh && sudo chmod +x /root/Docker_log.sh && sudo /root/Docker_log.sh",
         desc: "🐳 Docker Engine: Docker_log.sh (Truncates Container Logs & Prunes Cache)"
       },
+      cacti: {
+        cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh | sudo bash",
+        rootCmd: "sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh && sudo chmod +x /root/cacti_log.sh && sudo /root/cacti_log.sh",
+        desc: "🌵 Cacti Monitoring: cacti_log.sh (Truncates Cacti/Spine Logs & Preserves .rrd Graphs)"
+      },
       cleaning: {
         cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh | sudo bash",
         rootCmd: "sudo wget -O /root/cleaning.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh && sudo chmod +x /root/cleaning.sh && sudo /root/cleaning.sh",
-        desc: "🚀 Multi-Service: cleaning.sh (Nginx, Apache, MySQL, Flussonic, Trash & APT)"
+        desc: "🚀 Multi-Service: cleaning.sh (Nginx, Apache, MySQL, Cacti, Flussonic, Trash & APT)"
       }
     };
 
@@ -1129,7 +1243,7 @@
       document.getElementById('quick-desc').textContent = data.desc;
       document.getElementById('quick-root-cmd').textContent = data.rootCmd;
 
-      const tabs = ['ubuntu', 'proxmox', 'docker', 'cleaning'];
+      const tabs = ['ubuntu', 'proxmox', 'docker', 'cacti', 'cleaning'];
       tabs.forEach(t => {
         const btn = document.getElementById('btn-tab-' + t);
         if (btn) {
@@ -1241,7 +1355,7 @@
         }
       });
 
-      ['all', 'ubuntu', 'proxmox', 'docker'].forEach(c => {
+      ['all', 'ubuntu', 'proxmox', 'docker', 'cacti'].forEach(c => {
         const btn = document.getElementById('filter-' + c);
         if (btn) {
           if (c === category) {
@@ -1292,12 +1406,13 @@
         'rec-ub-desc': '🌟 Most balanced & safe: Cleans systemd journal logs (journalctl --vacuum-time=7d), protects security and login history logs (wtmp / btmp), truncates without crashing services, preserves essential CLI tools, and displays a disk delta report.',
         'rec-px-desc': '🌟 100% Storage Safe: Cleans host node journals, service logs, and apt caches while enforcing strict safety rules to guarantee zero data loss in Proxmox VM storage.',
         'rec-dk-desc': '🐳 Zero-downtime log cleaner: Safely truncates container JSON logs without stopping containers, prunes dangling images, build cache, and stopped containers while strictly preserving persistent data volumes.',
+        'rec-cacti-desc': '🌵 Zero-disruption Cacti cleaner: Safely truncates cacti.log and Spine poller logs without breaking file permissions, removes rotated archives, and strictly preserves all .rrd performance graphs.',
         'matrix-title': '📊 Comprehensive Feature Comparison',
         'matrix-sub': 'Compare what each script cleans and what it protects before deploying:',
         'tree-title': '📁 Repository Structure',
-        'tree-sub': 'Clean separation between Ubuntu/Debian, Proxmox VE, and Docker environments:',
+        'tree-sub': 'Clean separation between Ubuntu/Debian, Proxmox VE, Docker, and Cacti environments:',
         'cat-title': '📁 Complete Scripts Catalog',
-        'cat-sub': 'Explore all 8 scripts available in the repository',
+        'cat-sub': 'Explore all 9 scripts available in the repository',
         'cron-title': 'Automate with Cron (One-Liner Setup & Management)',
         'cron-sub': 'Automate cleanup without manually opening or editing crontab files. Set, customize, verify, or remove in one command!',
         'cron-gen-title': '⚙️ Interactive Crontab Line Builder',
@@ -1342,12 +1457,13 @@
         'rec-ub-desc': '🌟 সবচেয়ে নিরাপদ ও ভারসাম্যপূর্ণ: সিস্টেম জার্নাল লগ পরিষ্কার করে (journalctl --vacuum-time=7d), লগইন হিস্ট্রি (wtmp / btmp) অক্ষত রাখে, কোনো জরুরি প্যাকেজ ডিলিট করে না এবং ডিস্ক ব্যবহারের ফাইনাল রিপোর্ট দেখায়।',
         'rec-px-desc': '🌟 ১০০% স্টোরেজ সুরক্ষিত: জার্নাল ও সার্ভিস লগ এবং APT ক্যাশ ক্লিন করে, কিন্তু Backups (/var/lib/vz/dump/), ISO Images এবং CT Templates-এর কোনো ফাইলে হাত দেয় না।',
         'rec-dk-desc': '🐳 জিরো-ডাউনটাইম লগ ক্লিনার: কন্টেইনার বন্ধ না করেই JSON লগ (*-json.log) ট্রাঙ্কেট করে, ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ মুছে দেয় কিন্তু গুরুত্বপূর্ণ ডাটা ভলিউম সুরক্ষিত রাখে।',
+        'rec-cacti-desc': '🌵 সুরক্ষিত Cacti ও Spine ক্লিনার: পারমিশন বা পোলার নষ্ট না করে cacti.log ও spine.log ট্রাঙ্কেট করে, রোটেটেড আর্কাইভ মুছে দেয় এবং RRA (.rrd) মেট্রিক গ্রাফ সম্পূর্ণ অক্ষত রাখে।',
         'matrix-title': '📊 বিস্তারিত ফিচার তুলনা (Feature Matrix)',
         'matrix-sub': 'সার্ভারে ব্যবহারের পূর্বে প্রতিটি স্ক্রিপ্টের সক্ষমতা ও সুরক্ষা যাচাই করুন:',
         'tree-title': '📁 রিপোজিটরি ফোল্ডার স্ট্রাকচার',
-        'tree-sub': 'Ubuntu/Debian, Proxmox VE ও Docker সার্ভারের জন্য সুসংগঠিত ডিরেক্টরি:',
+        'tree-sub': 'Ubuntu/Debian, Proxmox VE, Docker ও Cacti সার্ভারের জন্য সুসংগঠিত ডিরেক্টরি:',
         'cat-title': '📁 সকল স্ক্রিপ্টের ক্যাটালগ',
-        'cat-sub': 'রিপোজিটরির ৮টি টেস্টেড স্ক্রিপ্টের তালিকা দেখুন',
+        'cat-sub': 'রিপোজিটরির ৯টি টেস্টেড স্ক্রিপ্টের তালিকা দেখুন',
         'cron-title': 'ক্রন জব দিয়ে অটোমেশন (One-Liner Setup & Management)',
         'cron-sub': 'ফাইল এডিট না করে এক কমান্ডে ক্রন জব সেট, ম্যানেজ, ভেরিফাই বা রিমুভ করুন!',
         'cron-gen-title': '⚙️ ইন্টারেক্টিভ ক্রনট্যাব বিল্ডার',
