@@ -97,10 +97,12 @@ Add this line to run daily at 3:00 AM:
 ---
 
 ## 📂 Scripts Included
-- **[clean-logs.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20clean-logs.sh)** – Apache2, Nginx, and Ubuntu cache cleanup.  
-- **[clean.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20clean.sh)** – General cleanup script.  
-- **[clean_up.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20clean_up.sh)** – Renamed version of `clean.sh`.  
-- **[log_cleanup.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20log_cleanup.sh)** – Advanced Ubuntu log cleaner with disk usage report.
+- **[cleaning.sh](cleaning.sh)** – Comprehensive system & log cleanup (Nginx, Apache2, Flussonic, MySQL, logs, APT cache, trash).
+- **[clean-logs.sh](clean-logs.sh)** – Apache2, Nginx, and Ubuntu cache cleanup.  
+- **[clean_up.sh](clean_up.sh)** – General cleanup script.  
+- **[log_cleanup.sh](log_cleanup.sh)** – Advanced Ubuntu log cleaner with disk usage report.
+- **[proxmox-cleanup.sh](proxmox-cleanup.sh)** – Proxmox-specific cleanup with cache/log removal.  
+- **[proxmox_clean.sh](proxmox_clean.sh)** – Alternate Proxmox cleanup script.  
 
 ---
 
@@ -114,6 +116,9 @@ Add this line to run daily at 3:00 AM:
 
 
 ```bash
+# Comprehensive System Cleanup
+wget -O cleaning.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cleaning.sh
+
 # Ubuntu Log Cleaner
 wget -O log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/log_cleanup.sh
 
@@ -133,20 +138,48 @@ wget -O proxmox_clean.sh https://raw.githubusercontent.com/sohag1192/System-Clea
 ---
 
 ### 📂 Scripts included
-- **[log_cleanup.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20log_cleanup.sh)** – Advanced Ubuntu log cleaner with disk usage report  
-- **[clean-logs.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20clean-logs.sh)** – Apache2, Nginx, and Ubuntu cache cleanup  
-- **[clean_up.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20clean_up.sh)** – General cleanup script (renamed from `clean.sh`)  
-- **[proxmox-cleanup.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20proxmox-cleanup.sh)** – Proxmox‑specific cleanup with cache/log removal  
-- **[proxmox_clean.sh](guide://action?prefill=Tell%20me%20more%20about%3A%20proxmox_clean.sh)** – Alternate Proxmox cleanup script  
+- **[cleaning.sh](cleaning.sh)** – Comprehensive system & log cleanup (Nginx, Apache2, Flussonic, MySQL, logs, APT cache, trash)  
+- **[log_cleanup.sh](log_cleanup.sh)** – Advanced Ubuntu log cleaner with disk usage report  
+- **[clean-logs.sh](clean-logs.sh)** – Apache2, Nginx, and Ubuntu cache cleanup  
+- **[clean_up.sh](clean_up.sh)** – General cleanup script (renamed from `clean.sh`)  
+- **[proxmox-cleanup.sh](proxmox-cleanup.sh)** – Proxmox‑specific cleanup with cache/log removal  
+- **[proxmox_clean.sh](proxmox_clean.sh)** – Alternate Proxmox cleanup script  
 
 ---
 
 ### ⚡ Quick usage
 1. Run `chmod +x scriptname.sh` after download.  
-2. Execute with `sudo ./scriptname.sh`.  
+2. Execute with `sudo ./scriptname.sh` (or `sudo bash scriptname.sh`).  
 3. (Optional) Add to cron for scheduled cleanup.  
 
-This way you’ll have **all log cleanup scripts** locally, ready to run or customi
+This way you’ll have **all log cleanup scripts** locally, ready to run or customize.
+
+---
+
+## 🔧 Troubleshooting (Script Not Working / `$'\r': command not found`)
+
+If running a script produces errors such as:
+- `cleaning.sh: line 9: $'\r': command not found`
+- `: No such file or directorylocal/nginx/logs/...`
+- `cleaning.sh: line 95: syntax error: unexpected end of file`
+
+This is caused by Windows CRLF (`\r\n`) line endings. Fix it by converting the file to Unix format with `dos2unix`:
+
+```bash
+# 1. Install dos2unix
+sudo apt-get install -y dos2unix
+
+# 2. Convert cleaning.sh to Unix line endings
+dos2unix cleaning.sh
+
+# (Optional) Fix all shell scripts in the folder at once
+dos2unix *.sh
+```
+
+*(Alternative fix without installing `dos2unix`)*:
+```bash
+sed -i 's/\r$//' cleaning.sh
+```
 
 ---
 

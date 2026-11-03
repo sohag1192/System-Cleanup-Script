@@ -12,7 +12,7 @@ echo "=== Starting Proxmox cleanup ==="
 }
 
 # Show disk usage of apt cache before cleaning
-du -sh /var/cache/apt/archives
+[ -d /var/cache/apt/archives ] && du -sh /var/cache/apt/archives 2>/dev/null
 
 # Clean system logs
 find /var/log -type f -exec sh -c ': > "$1"' _ {} \;
@@ -31,9 +31,9 @@ fi
 rm -rf /home/*/.local/share/Trash/*/** 2>/dev/null
 rm -rf /root/.local/share/Trash/*/** 2>/dev/null
 
-# Remove man pages (optional, saves space but removes docs)
-rm -rf /usr/share/man/?? 2>/dev/null
-rm -rf /usr/share/man/??_* 2>/dev/null
+# Keep manual pages untouched (cleaned only logs and cache)
+# rm -rf /usr/share/man/?? 2>/dev/null
+# rm -rf /usr/share/man/??_* 2>/dev/null
 
 # Delete rotated and compressed logs
 find /var/log -type f -regex ".*\.gz$" -delete

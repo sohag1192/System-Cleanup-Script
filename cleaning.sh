@@ -11,9 +11,21 @@ echo ">>> Starting system cleanup..."
 
 # --- Clear Nginx Logs ---
 echo "Clearing Nginx logs..."
-: > /usr/local/nginx/logs/access.log
-: > /usr/local/nginx/logs/error.log
-: > /usr/local/nginx/logs/rtmp_error.log
+if [ -d "/usr/local/nginx/logs" ]; then
+  : > /usr/local/nginx/logs/access.log 2>/dev/null || true
+  : > /usr/local/nginx/logs/error.log 2>/dev/null || true
+  : > /usr/local/nginx/logs/rtmp_error.log 2>/dev/null || true
+  echo "Nginx logs cleaned (/usr/local/nginx/logs)."
+fi
+if [ -d "/var/log/nginx" ]; then
+  find /var/log/nginx -type f -exec truncate -s 0 {} \;
+  find /var/log/nginx -type f -regex ".*\.gz$" -delete
+  find /var/log/nginx -type f -regex ".*\.[0-9]$" -delete
+  echo "Nginx logs cleaned (/var/log/nginx)."
+fi
+if [ ! -d "/usr/local/nginx/logs" ] && [ ! -d "/var/log/nginx" ]; then
+  echo "Nginx log directory not found."
+fi
 
 # --- Clear Apache2 Logs ---
 echo "Clearing Apache2 logs..."
@@ -50,7 +62,7 @@ fi
 
 # --- Show Cache Size Before Cleanup ---
 echo "Cache size before cleanup:"
-du -sh /var/cache/apt/archives
+[ -d /var/cache/apt/archives ] && du -sh /var/cache/apt/archives 2>/dev/null
 
 # --- Clear System Logs ---
 echo "Clearing system logs..."
@@ -69,12 +81,12 @@ apt-get autoclean
 # --- Remove Unnecessary Packages ---
 echo "Removing unused packages..."
 apt-get autoremove -y
-apt-get remove --purge -y software-properties-common
+# apt-get remove --purge -y software-properties-common
 
 # --- Remove Orphaned Packages ---
 echo "Removing orphaned packages..."
 if command -v deborphan >/dev/null 2>&1; then
-  deborphan | xargs sudo apt-get -y remove --purge
+  deborphan | xargs --no-run-if-empty apt-get -y remove --purge
 fi
 
 # --- Clear Trash ---
@@ -89,6 +101,6 @@ rm -rf /usr/share/man/??_* 2>/dev/null
 
 # --- Show Cache Size After Cleanup ---
 echo "Cache size after cleanup:"
-du -sh /var/cache/apt/archives
+[ -d /var/cache/apt/archives ] && du -sh /var/cache/apt/archives 2>/dev/null
 
 echo ">>> Cleaning is completed!"

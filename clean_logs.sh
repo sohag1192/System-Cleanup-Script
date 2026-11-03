@@ -14,7 +14,7 @@ apt-get autoremove -y
 
 # Remove orphaned packages (if deborphan is installed)
 if command -v deborphan >/dev/null 2>&1; then
-    deborphan | xargs apt-get -y remove --purge
+    deborphan | xargs --no-run-if-empty apt-get -y remove --purge
 fi
 
 # Clear user trash

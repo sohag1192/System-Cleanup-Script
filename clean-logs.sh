@@ -27,7 +27,7 @@ find /var/log -type f -regex ".*\.[0-9]$" -delete
 
 # --- Apt cache cleanup ---
 echo "Cleaning apt cache..."
-du -sh /var/cache/apt/archives
+[ -d /var/cache/apt/archives ] && du -sh /var/cache/apt/archives 2>/dev/null
 apt-get clean
 apt-get autoclean
 apt-get autoremove -y

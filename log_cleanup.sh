@@ -14,15 +14,20 @@ find /var/log -type f -regex ".*\.[0-9]$" -delete
 journalctl --vacuum-time=7d
 
 # 4. Clear NGINX and RTMP logs if applicable
-: > /usr/local/nginx/logs/access.log 2>/dev/null
-: > /usr/local/nginx/logs/error.log 2>/dev/null
-: > /usr/local/nginx/logs/rtmp_error.log 2>/dev/null
+if [ -d "/usr/local/nginx/logs" ]; then
+  : > /usr/local/nginx/logs/access.log 2>/dev/null || true
+  : > /usr/local/nginx/logs/error.log 2>/dev/null || true
+  : > /usr/local/nginx/logs/rtmp_error.log 2>/dev/null || true
+fi
+if [ -d "/var/log/nginx" ]; then
+  find /var/log/nginx -type f -exec truncate -s 0 {} \; 2>/dev/null || true
+fi
 
 # 5. Clear APT cache and orphaned packages
 apt-get clean
 apt-get autoclean
 apt-get autoremove -y
-command -v deborphan >/dev/null && deborphan | xargs apt-get -y remove --purge
+command -v deborphan >/dev/null && deborphan | xargs --no-run-if-empty apt-get -y remove --purge
 
 # 6. Remove user and root trash
 rm -rf /home/*/.local/share/Trash/*/** 2>/dev/null
