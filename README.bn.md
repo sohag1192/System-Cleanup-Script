@@ -72,11 +72,11 @@ System-Cleanup-Script/
 curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash
 ```
 
-**অথবা ডাউনলোড করে রান করুন:**
+**`/root/` ডিরেক্টরিতে ডাউনলোড ও রান:**
 ```bash
-wget -O log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh
-chmod +x log_cleanup.sh
-sudo ./log_cleanup.sh
+sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh
+sudo chmod +x /root/log_cleanup.sh
+sudo /root/log_cleanup.sh
 ```
 
 ---
@@ -88,11 +88,11 @@ sudo ./log_cleanup.sh
 curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash
 ```
 
-**অথবা ডাউনলোড করে রান করুন:**
+**`/root/` ডিরেক্টরিতে ডাউনলোড ও রান:**
 ```bash
-wget -O proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
-chmod +x proxmox-cleanup.sh
-sudo ./proxmox-cleanup.sh
+sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
+sudo chmod +x /root/proxmox-cleanup.sh
+sudo /root/proxmox-cleanup.sh
 ```
 
 > [!IMPORTANT]
@@ -119,23 +119,31 @@ sudo ./proxmox-cleanup.sh
 
 ## ⏰ ক্রন জব দিয়ে অটোমেশন (One-Liner Setup & Management)
 
-ম্যানুয়ালি ফাইল ওপেন না করেই টার্মিনালে এক কমান্ডে ক্রন জব সেট ও ম্যানেজ করতে পারবেন:
+ম্যানুয়ালি ফাইল ওপেন না করেই টার্মিনালে এক কমান্ডে ক্রন জব সেট ও ম্যানেজ করতে পারবেন। প্রথমে স্ক্রিপ্টটি `/root/` ডিরেক্টরিতে ডাউনলোড করুন, তারপর ওয়ান-লাইনার কমান্ড রান করুন:
 
 ### ⚡ অপশন ১: এক লাইনে অটো-সেটআপ (Recommended - কোনো এডিটর লাগবে না)
 
 **Ubuntu / Debian সার্ভারের জন্য (প্রতিদিন রাত ৩:০০ টায়):**
 ```bash
-(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+# ১. /root/log_cleanup.sh এ ডাউনলোড করুন
+sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh && sudo chmod +x /root/log_cleanup.sh
+
+# ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
+(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **Proxmox VE সার্ভারের জন্য (প্রতিদিন রাত ৩:০০ টায়):**
 ```bash
-(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /usr/local/bin/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+# ১. /root/proxmox-cleanup.sh এ ডাউনলোড করুন
+sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && sudo chmod +x /root/proxmox-cleanup.sh
+
+# ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
+(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **সিস্টেম-ওয়াইড ক্রন ফাইল তৈরি (`/etc/cron.d/`):**
 ```bash
-echo "0 3 * * * root /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
+echo "0 3 * * * root /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
 ```
 
 ---
@@ -162,15 +170,15 @@ sudo crontab -e
 নিচের যেকোনো একটি লাইন পেস্ট করে সেভ করুন:
 * **প্রতিদিন রাত ৩:০০ টায় (প্রস্তাবিত):**
   ```cron
-  0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 3 * * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 * **প্রতি সপ্তাহে রবিবার রাত ২:০০ টায়:**
   ```cron
-  0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 2 * * 0 /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 * **প্রতি মাসের ১ তারিখ ভোর ৪:০০ টায়:**
   ```cron
-  0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 4 1 * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 
 ---

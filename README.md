@@ -72,11 +72,11 @@ System-Cleanup-Script/
 curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash
 ```
 
-**Manual Download & Run:**
+**Download to `/root/` & Run:**
 ```bash
-wget -O log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh
-chmod +x log_cleanup.sh
-sudo ./log_cleanup.sh
+sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh
+sudo chmod +x /root/log_cleanup.sh
+sudo /root/log_cleanup.sh
 ```
 
 ---
@@ -88,11 +88,11 @@ sudo ./log_cleanup.sh
 curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash
 ```
 
-**Manual Download & Run:**
+**Download to `/root/` & Run:**
 ```bash
-wget -O proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
-chmod +x proxmox-cleanup.sh
-sudo ./proxmox-cleanup.sh
+sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
+sudo chmod +x /root/proxmox-cleanup.sh
+sudo /root/proxmox-cleanup.sh
 ```
 
 > [!IMPORTANT]
@@ -119,23 +119,31 @@ sudo ./proxmox-cleanup.sh
 
 ## ⏰ Automate with Cron (One-Liner Setup & Management)
 
-You can automate cleanup without manually opening or editing crontab files by using these one-liner commands:
+You can automate cleanup without manually opening or editing crontab files by first downloading the script to `/root/` and then running the one-liner command:
 
 ### ⚡ Option 1: Instant One-Liner (No editor required - Recommended)
 
 **For Ubuntu / Debian (Daily at 3:00 AM):**
 ```bash
-(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+# 1. Download to /root/log_cleanup.sh
+sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh && sudo chmod +x /root/log_cleanup.sh
+
+# 2. Add to crontab in one command
+(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **For Proxmox VE (Daily at 3:00 AM):**
 ```bash
-(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /usr/local/bin/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+# 1. Download to /root/proxmox-cleanup.sh
+sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && sudo chmod +x /root/proxmox-cleanup.sh
+
+# 2. Add to crontab in one command
+(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **Alternative: System-wide Cron (`/etc/cron.d/`):**
 ```bash
-echo "0 3 * * * root /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
+echo "0 3 * * * root /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
 ```
 
 ---
@@ -162,15 +170,15 @@ sudo crontab -e
 Add one of the following lines:
 * **Daily at 3:00 AM (Recommended for active servers):**
   ```cron
-  0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 3 * * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 * **Weekly on Sunday at 2:00 AM:**
   ```cron
-  0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 2 * * 0 /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 * **Monthly on the 1st day at 4:00 AM:**
   ```cron
-  0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  0 4 1 * * /root/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
   ```
 
 ---
