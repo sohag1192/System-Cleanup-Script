@@ -38,6 +38,7 @@
 | :--- | :--- | :--- |
 | **Ubuntu / Debian** | [`ubuntu/log_cleanup.sh`](ubuntu/log_cleanup.sh) | 🌟 **সবচেয়ে নিরাপদ ও ভারসাম্যপূর্ণ:** সিস্টেম জার্নাল লগ পরিষ্কার করে (`journalctl --vacuum-time=7d`), লগইন হিস্ট্রি (`wtmp`/`btmp`) অক্ষত রাখে, কোনো জরুরি প্যাকেজ ডিলিট করে না এবং ডিস্ক ব্যবহারের ফাইনাল রিপোর্ট দেখায়। |
 | **Proxmox VE** | [`proxmox/proxmox-cleanup.sh`](proxmox/proxmox-cleanup.sh) | 🌟 **১০০% স্টোরেজ সুরক্ষিত:** জার্নাল ও সার্ভিস লগ এবং APT ক্যাশ ক্লিন করে, কিন্তু **Backups (`/var/lib/vz/dump/`)**, **ISO Images (`/var/lib/vz/template/iso/`)** এবং **CT Templates (`/var/lib/vz/template/cache/`)**-এর কোনো ফাইলে হাত দেয় না। |
+| **Docker Engine** | [`docker/Docker_log.sh`](docker/Docker_log.sh) | 🐳 **জিরো-ডাউনটাইম লগ ক্লিনার:** কন্টেইনার বন্ধ না করেই JSON লগ (`*-json.log`) ট্রাঙ্কেট করে, ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ মুছে দেয় কিন্তু গুরুত্বপূর্ণ ডাটা ভলিউম সুরক্ষিত রাখে। |
 
 ---
 
@@ -54,6 +55,8 @@ System-Cleanup-Script/
 ├── proxmox/                     # Proxmox VE ক্লিনআপ স্ক্রিপ্ট
 │   ├── proxmox-cleanup.sh       # ⭐ [BEST] স্টোরেজ সুরক্ষিত Proxmox লগ ও ক্যাশ ক্লিনার
 │   └── proxmox_clean.sh         # লাইটওয়েট Proxmox স্ক্রিপ্ট
+├── docker/                      # ডকার লগ ও ক্যাশ অপ্টিমাইজেশন
+│   └── Docker_log.sh            # 🐳 কন্টেইনার JSON লগ ট্রাঙ্কেট ও ডকার ক্যাশ ক্লিনার
 ├── upload.bat                   # উইন্ডোজ গিট অটো-কমিট ও পুশ স্ক্রিপ্ট
 ├── .gitattributes               # শেল স্ক্রিপ্টের জন্য Unix LF লাইন এন্ডিং নিশ্চিত করে
 ├── LICENSE                      # MIT লাইসেন্স
@@ -100,20 +103,37 @@ sudo /root/proxmox-cleanup.sh
 
 ---
 
+### ৩. Docker পরিবেশের জন্য (`Docker_log.sh`)
+
+**এক লাইনে সরাসরি রান করুন:**
+```bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh | sudo bash
+```
+
+**`/root/` ডিরেক্টরিতে ডাউনলোড ও রান:**
+```bash
+sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh
+sudo chmod +x /root/Docker_log.sh
+sudo /root/Docker_log.sh
+```
+
+---
+
 ## 📊 বিস্তারিত ফিচার তুলনা (Feature Matrix)
 
-| ফিচার | `ubuntu/log_cleanup.sh` ⭐ | `ubuntu/cleaning.sh` | `ubuntu/clean_logs.sh` | `proxmox/proxmox-cleanup.sh` ⭐ |
+| ফিচার | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `ubuntu/cleaning.sh` |
 | :--- | :---: | :---: | :---: | :---: |
-| **সিস্টেম লগ ট্রাঙ্কেট** | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) | ✅ (`: >`) | ✅ (`truncate -s 0`) |
-| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ❌ | ✅ (`--vacuum-time=7d`) |
-| **`wtmp` / `btmp` লগইন ফাইল রক্ষা** | ✅ (সুরক্ষিত) | ❌ | ❌ | ✅ (সুরক্ষিত) |
-| **পুরনো রোটেটেড লগ (`.gz`, `.[0-9]`)** | ✅ ডিলিট হয় | ✅ ডিলিট হয় | ✅ ডিলিট হয় | ✅ ডিলিট হয় |
-| **APT ক্যাশ ও Autoclean** | ✅ | ✅ | ✅ | ✅ |
-| **অরফান প্যাকেজ রিমুভ (`deborphan`)** | ✅ নিরাপদ | ✅ | ✅ | ✅ নিরাপদ |
-| **রিসাইকেল ট্র্যাশ ক্লিন** | ✅ | ✅ | ✅ | ✅ |
-| **Nginx / ওয়েব সার্ভার লগ** | ✅ | ✅ (Apache, MySQL, Flussonic) | ✅ | ✅ |
-| **Backups ও ISO Images অক্ষত রাখা** | N/A | N/A | N/A | ✅ **১০০% সুরক্ষিত** |
-| **ডিস্ক রেজাল্ট রিপোর্ট (`df -h`)** | ✅ | ❌ | ❌ | ❌ |
+| **সিস্টেম লগ ট্রাঙ্কেট** | ✅ (`truncate -s 0`) | ❌ (শুধুমাত্র ডকার লগ) | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) |
+| **কন্টেইনার JSON লগ ট্রাঙ্কেট** | ✅ (স্বয়ংক্রিয়) | ✅ (`*-json.log`) | ❌ | ❌ |
+| **ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ |
+| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ |
+| **`wtmp` / `btmp` লগইন ফাইল রক্ষা** | ✅ (সুরক্ষিত) | N/A | ✅ (সুরক্ষিত) | ❌ |
+| **পুরনো রোটেটেড লগ (`.gz`, `.[0-9]`)** | ✅ ডিলিট হয় | ❌ | ✅ ডিলিট হয় | ✅ ডিলিট হয় |
+| **APT ক্যাশ ও Autoclean** | ✅ | ❌ | ✅ | ✅ |
+| **অরফান প্যাকেজ রিমুভ (`deborphan`)** | ✅ নিরাপদ | ❌ | ✅ নিরাপদ | ✅ |
+| **রিসাইকেল ট্র্যাশ ক্লিন** | ✅ | ❌ | ✅ | ✅ |
+| **Backups ও ISO Images অক্ষত রাখা** | N/A | N/A | ✅ **১০০% সুরক্ষিত** | N/A |
+| **ডিস্ক রেজাল্ট রিপোর্ট** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ❌ |
 
 ---
 
@@ -139,6 +159,15 @@ sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag119
 
 # ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
 (sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
+
+**Docker হোস্টের জন্য (প্রতি সপ্তাহে রবিবার রাত ৩:৩০ টায়):**
+```bash
+# ১. /root/Docker_log.sh এ ডাউনলোড করুন
+sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh && sudo chmod +x /root/Docker_log.sh
+
+# ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
+(sudo crontab -l 2>/dev/null | grep -v "Docker_log.sh"; echo "30 3 * * 0 /root/Docker_log.sh >> /var/log/docker_cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **সিস্টেম-ওয়াইড ক্রন ফাইল তৈরি (`/etc/cron.d/`):**

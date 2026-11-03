@@ -34,10 +34,11 @@ This repository provides **battle-tested shell scripts** organized into separate
 
 ## 🏆 Which Script is the Best? (Recommended)
 
-| Platform | Best Script | Why It's the Best? |
+| Platform / Service | Best Script | Why It's the Best? |
 | :--- | :--- | :--- |
 | **Ubuntu / Debian** | [`ubuntu/log_cleanup.sh`](ubuntu/log_cleanup.sh) | 🌟 **Most balanced & safe**: Cleans systemd journal logs (`journalctl`), protects security logs (`wtmp`/`btmp`), truncates without crashing services, and does not remove essential system tools. |
 | **Proxmox VE** | [`proxmox/proxmox-cleanup.sh`](proxmox/proxmox-cleanup.sh) | 🌟 **100% Storage Safe**: Vacuums journals, truncates logs and APT caches while strictly protecting **Backups (`/var/lib/vz/dump/`)**, **ISO Images (`/var/lib/vz/template/iso/`)**, and **CT Templates (`/var/lib/vz/template/cache/`)**. |
+| **Docker Engine** | [`docker/Docker_log.sh`](docker/Docker_log.sh) | 🐳 **Zero-downtime log cleaner**: Safely truncates container JSON logs without stopping containers, prunes dangling images, build cache, and stopped containers while preserving data volumes. |
 
 ---
 
@@ -54,6 +55,8 @@ System-Cleanup-Script/
 ├── proxmox/                     # Proxmox VE Cleanup Scripts
 │   ├── proxmox-cleanup.sh       # ⭐ [BEST] Storage-safe Proxmox log & cache cleaner
 │   └── proxmox_clean.sh         # Lightweight Proxmox cleanup
+├── docker/                      # Docker Optimization & Cleanup
+│   └── Docker_log.sh            # 🐳 Truncates container JSON logs & prunes cache/images
 ├── upload.bat                   # Windows batch script for automated git commit & push
 ├── .gitattributes               # Enforces Unix LF line endings for shell scripts
 ├── LICENSE                      # MIT License
@@ -100,20 +103,37 @@ sudo /root/proxmox-cleanup.sh
 
 ---
 
+### 3. For Docker Environment (`Docker_log.sh`)
+
+**Direct Run (One-liner):**
+```bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh | sudo bash
+```
+
+**Download to `/root/` & Run:**
+```bash
+sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh
+sudo chmod +x /root/Docker_log.sh
+sudo /root/Docker_log.sh
+```
+
+---
+
 ## 📊 Comprehensive Feature Comparison
 
-| Feature | `ubuntu/log_cleanup.sh` ⭐ | `ubuntu/cleaning.sh` | `ubuntu/clean_logs.sh` | `proxmox/proxmox-cleanup.sh` ⭐ |
+| Feature | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `ubuntu/cleaning.sh` |
 | :--- | :---: | :---: | :---: | :---: |
-| **System Log Truncation** | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) | ✅ (`: >`) | ✅ (`truncate -s 0`) |
-| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ❌ | ✅ (`--vacuum-time=7d`) |
-| **`wtmp` / `btmp` Login Safe** | ✅ (Protected) | ❌ | ❌ | ✅ (Protected) |
-| **Old Compressed Logs (`.gz`, `.[0-9]`)** | ✅ Deleted | ✅ Deleted | ✅ Deleted | ✅ Deleted |
-| **APT Cache & Autoclean** | ✅ | ✅ | ✅ | ✅ |
-| **Orphaned Packages (`deborphan`)** | ✅ Safe | ✅ | ✅ | ✅ Safe |
-| **Trash Folder Cleanup** | ✅ | ✅ | ✅ | ✅ |
-| **Nginx / Web Server Logs** | ✅ | ✅ (Apache, MySQL, Flussonic) | ✅ | ✅ |
-| **Protects Backups & ISO Images** | N/A | N/A | N/A | ✅ **100% Untouched** |
-| **Displays Disk Report (`df -h`)** | ✅ | ❌ | ❌ | ❌ |
+| **System Log Truncation** | ✅ (`truncate -s 0`) | ❌ (Docker logs only) | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) |
+| **Container JSON Log Truncation** | ✅ (Automatic) | ✅ (`*-json.log`) | ❌ | ❌ |
+| **Dangling Images & Build Cache Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ |
+| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ |
+| **`wtmp` / `btmp` Login Safe** | ✅ (Protected) | N/A | ✅ (Protected) | ❌ |
+| **Old Compressed Logs (`.gz`, `.[0-9]`)** | ✅ Deleted | ❌ | ✅ Deleted | ✅ Deleted |
+| **APT Cache & Autoclean** | ✅ | ❌ | ✅ | ✅ |
+| **Orphaned Packages (`deborphan`)** | ✅ Safe | ❌ | ✅ Safe | ✅ |
+| **Trash Folder Cleanup** | ✅ | ❌ | ✅ | ✅ |
+| **Protects Backups & ISO Images** | N/A | N/A | ✅ **100% Untouched** | N/A |
+| **Displays Disk Report** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ❌ |
 
 ---
 
@@ -139,6 +159,15 @@ sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag119
 
 # 2. Add to crontab in one command
 (sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
+
+**For Docker Host (Weekly on Sunday at 3:30 AM):**
+```bash
+# 1. Download to /root/Docker_log.sh
+sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh && sudo chmod +x /root/Docker_log.sh
+
+# 2. Add to crontab in one command
+(sudo crontab -l 2>/dev/null | grep -v "Docker_log.sh"; echo "30 3 * * 0 /root/Docker_log.sh >> /var/log/docker_cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **Alternative: System-wide Cron (`/etc/cron.d/`):**

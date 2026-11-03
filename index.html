@@ -3,15 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>System Cleanup & Space Optimization Scripts | Linux & Proxmox</title>
-  <meta name="description" content="Production-grade, battle-tested, automated Linux (Ubuntu/Debian) and Proxmox VE disk cleanup and log optimization tools. Safe truncation without service interruption." />
-  <meta name="author" content="Md. Sohag Rana" />
   
-  <!-- Open Graph / Meta -->
+  <!-- Primary SEO Meta Tags -->
+  <title>Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization</title>
+  <meta name="title" content="Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization" />
+  <meta name="description" content="Production-grade, automated Linux (Ubuntu, Debian) and Proxmox VE disk cleanup scripts. Safely truncate active logs, vacuum systemd journals, and clean APT cache without service downtime." />
+  <meta name="keywords" content="linux cleanup script, ubuntu disk cleanup, proxmox log cleanup, proxmox cleanup script, truncate log files, journalctl vacuum, free disk space ubuntu, clean apt cache, systemd log clean, debian disk space, sohag1192" />
+  <meta name="author" content="Md. Sohag Rana" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="theme-color" content="#0b0f17" />
+  <link rel="canonical" href="https://sohag1192.github.io/System-Cleanup-Script/" />
+  
+  <!-- Language Alternates -->
+  <link rel="alternate" hreflang="x-default" href="https://sohag1192.github.io/System-Cleanup-Script/" />
+  <link rel="alternate" hreflang="en" href="https://sohag1192.github.io/System-Cleanup-Script/" />
+  <link rel="alternate" hreflang="bn" href="https://sohag1192.github.io/System-Cleanup-Script/" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧹</text></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧹</text></svg>" />
+
+  <!-- Open Graph / Facebook / Discord / LinkedIn -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sohag1192.github.io/System-Cleanup-Script/" />
-  <meta property="og:title" content="System Cleanup & Space Optimization Scripts" />
-  <meta property="og:description" content="Safe, automated disk cleanup scripts for Ubuntu, Debian and Proxmox VE." />
+  <meta property="og:site_name" content="System Cleanup & Space Optimization" />
+  <meta property="og:title" content="Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization" />
+  <meta property="og:description" content="Production-grade, automated Linux and Proxmox VE disk cleanup tools. Safely truncate logs and vacuum journals without service disruption." />
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/sohag1192/System-Cleanup-Script" />
+  <meta property="og:image:alt" content="System Cleanup & Space Optimization Scripts Preview" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="bn_BD" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://sohag1192.github.io/System-Cleanup-Script/" />
+  <meta name="twitter:title" content="Linux & Proxmox System Cleanup Scripts | Safe Disk Space Optimization" />
+  <meta name="twitter:description" content="Production-grade, automated Linux and Proxmox VE disk cleanup tools. Safely truncate logs and vacuum journals without service disruption." />
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/sohag1192/System-Cleanup-Script" />
+  <meta name="twitter:creator" content="@sohag1192" />
+
+  <!-- Structured Data (JSON-LD Schema) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://sohag1192.github.io/System-Cleanup-Script/#website",
+        "url": "https://sohag1192.github.io/System-Cleanup-Script/",
+        "name": "System Cleanup & Space Optimization Script",
+        "description": "Production-grade automated Linux & Proxmox disk cleanup tools.",
+        "inLanguage": ["en", "bn"],
+        "publisher": {
+          "@type": "Person",
+          "name": "Md. Sohag Rana",
+          "url": "https://github.com/sohag1192"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://sohag1192.github.io/System-Cleanup-Script/#software",
+        "name": "System Cleanup & Space Optimization Scripts",
+        "operatingSystem": "Linux, Ubuntu, Debian, Proxmox VE",
+        "applicationCategory": "UtilitiesApplication, SystemAdministration",
+        "license": "https://github.com/sohag1192/System-Cleanup-Script/blob/main/LICENSE",
+        "url": "https://sohag1192.github.io/System-Cleanup-Script/",
+        "downloadUrl": "https://github.com/sohag1192/System-Cleanup-Script",
+        "author": {
+          "@type": "Person",
+          "name": "Md. Sohag Rana",
+          "jobTitle": "Network & IT Infrastructure Manager",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Sarker Net"
+          },
+          "url": "https://github.com/sohag1192"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://sohag1192.github.io/System-Cleanup-Script/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I safely clean disk space on an Ubuntu or Debian server?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Run the one-liner command: 'curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash'. It vacuums systemd journals older than 7 days, safely truncates active logs to 0 bytes without deleting files, flushes APT caches, and frees gigabytes of space without crashing active services."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does the Proxmox VE cleanup script delete VM backups or ISO images?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. The proxmox-cleanup.sh script strictly protects VM backup archives (/var/lib/vz/dump/), OS ISO images (/var/lib/vz/template/iso/), and container templates (/var/lib/vz/template/cache/). Only host systemd journals, rotated logs, and APT caches are cleaned."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How to fix 'cleaning.sh: line 9: $'\r': command not found' in bash?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "This error occurs when a script has Windows CRLF line endings. Fix it by converting the file with dos2unix ('sudo apt-get install -y dos2unix && dos2unix cleaning.sh') or with sed: 'sed -i \"s/\\r$//\" cleaning.sh'."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does safe log truncation use 'truncate -s 0' instead of 'rm'?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "If you delete an open log file with 'rm', running daemons like Nginx, Apache, or MySQL will continue writing to the unlinked file descriptor, meaning disk space is not freed until the daemon is restarted. Truncating the file with 'truncate -s 0' or ': > file.log' instantly reclaims the disk space without breaking file descriptors or interrupting active services."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,6 +226,7 @@
         <a href="#scripts" class="hover:text-brand-400 transition-colors" data-i18n="nav-all">All Scripts</a>
         <a href="#cron" class="hover:text-brand-400 transition-colors" data-i18n="nav-cron">Cron Generator</a>
         <a href="#troubleshooting" class="hover:text-brand-400 transition-colors text-amber-400 hover:text-amber-300">Troubleshooting</a>
+        <a href="#faq" class="hover:text-brand-400 transition-colors" data-i18n="nav-faq">FAQ</a>
       </nav>
 
       <div class="flex items-center gap-3">
@@ -211,8 +326,11 @@
             <button onclick="switchQuickTab('proxmox')" id="btn-tab-proxmox" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
               Proxmox VE
             </button>
+            <button onclick="switchQuickTab('docker')" id="btn-tab-docker" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
+              🐳 Docker
+            </button>
             <button onclick="switchQuickTab('cleaning')" id="btn-tab-cleaning" class="px-3 py-1 rounded text-slate-400 hover:text-white transition-all">
-              Multi-Service (cleaning.sh)
+              Multi-Service
             </button>
           </div>
         </div>
@@ -616,6 +734,68 @@ sudo ./cleaning.sh</pre>
       </div>
     </section>
 
+    <!-- Frequently Asked Questions (FAQ) - SEO Optimized -->
+    <section id="faq" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20">
+          Knowledge Base
+        </span>
+        <h2 class="text-3xl font-bold text-white mt-4 mb-3" data-i18n="faq-title">Frequently Asked Questions</h2>
+        <p class="text-slate-400 text-sm sm:text-base" data-i18n="faq-sub">
+          Everything you need to know about safe system cleanup and space optimization.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto space-y-4">
+        <!-- Q1 -->
+        <details class="group p-5 rounded-xl bg-dark-800 border border-dark-700 open:border-brand-500/40 transition-all">
+          <summary class="flex items-center justify-between font-semibold text-white cursor-pointer list-none text-base">
+            <span data-i18n="faq-q1">How do I safely clean disk space on an Ubuntu or Debian server?</span>
+            <span class="text-brand-400 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed" data-i18n="faq-a1">
+            Run the one-liner command: <code class="bg-dark-900 text-brand-400 px-1.5 py-0.5 rounded font-mono text-xs">curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash</code>. It vacuums systemd journals older than 7 days, safely truncates active logs to 0 bytes without deleting files, flushes APT caches, and frees gigabytes of space without crashing running services.
+          </p>
+        </details>
+
+        <!-- Q2 -->
+        <details class="group p-5 rounded-xl bg-dark-800 border border-dark-700 open:border-brand-500/40 transition-all">
+          <summary class="flex items-center justify-between font-semibold text-white cursor-pointer list-none text-base">
+            <span data-i18n="faq-q2">Does the Proxmox VE cleanup script delete VM backups or templates?</span>
+            <span class="text-brand-400 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed" data-i18n="faq-a2">
+            <strong>No, absolutely not.</strong> <code class="bg-dark-900 text-blue-400 px-1.5 py-0.5 rounded font-mono text-xs">proxmox/proxmox-cleanup.sh</code> strictly protects your VM & container backup archives (<code class="font-mono text-xs text-slate-200">/var/lib/vz/dump/</code>), OS ISO images (<code class="font-mono text-xs text-slate-200">/var/lib/vz/template/iso/</code>), and container templates (<code class="font-mono text-xs text-slate-200">/var/lib/vz/template/cache/</code>). Only host systemd journals, rotated logs, and APT caches are cleaned.
+          </p>
+        </details>
+
+        <!-- Q3 -->
+        <details class="group p-5 rounded-xl bg-dark-800 border border-dark-700 open:border-brand-500/40 transition-all">
+          <summary class="flex items-center justify-between font-semibold text-white cursor-pointer list-none text-base">
+            <span data-i18n="faq-q3">Why does safe log truncation use 'truncate -s 0' instead of 'rm'?</span>
+            <span class="text-brand-400 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed" data-i18n="faq-a3">
+            When you delete an active log file using <code class="font-mono text-xs bg-dark-900 text-red-400 px-1 py-0.5 rounded">rm</code>, running services (like Nginx, Apache, or MySQL) keep writing to the open file descriptor in memory. The disk space is not actually freed until the daemon is restarted. Truncating the file with <code class="font-mono text-xs bg-dark-900 text-emerald-400 px-1 py-0.5 rounded">truncate -s 0</code> or <code class="font-mono text-xs bg-dark-900 text-emerald-400 px-1 py-0.5 rounded">: &gt; file.log</code> frees the disk space immediately without closing file descriptors or interrupting active services.
+          </p>
+        </details>
+
+        <!-- Q4 -->
+        <details class="group p-5 rounded-xl bg-dark-800 border border-dark-700 open:border-brand-500/40 transition-all">
+          <summary class="flex items-center justify-between font-semibold text-white cursor-pointer list-none text-base">
+            <span data-i18n="faq-q4">How do I fix the "$'\r': command not found" error in Bash?</span>
+            <span class="text-brand-400 transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div class="mt-3 text-sm text-slate-300 leading-relaxed">
+            <span data-i18n="faq-a4">This happens when a script has Windows CRLF line endings. To fix it, run:</span>
+            <code class="block font-mono text-xs bg-dark-950 text-emerald-400 p-2.5 rounded-lg mt-2 overflow-x-auto">sudo apt-get install -y dos2unix &amp;&amp; dos2unix cleaning.sh</code>
+            <span data-i18n="faq-a4-sub">or use sed without installing anything:</span>
+            <code class="block font-mono text-xs bg-dark-950 text-emerald-400 p-2.5 rounded-lg mt-1 overflow-x-auto">sed -i 's/\r$//' cleaning.sh</code>
+          </div>
+        </details>
+      </div>
+    </section>
+
     <!-- Maintainer Info -->
     <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-dark-800 text-center">
       <div class="max-w-xl mx-auto p-6 rounded-2xl bg-dark-800/60 border border-dark-700">
@@ -671,6 +851,12 @@ sudo ./cleaning.sh</pre>
         desc: "🛡️ Storage Safe: proxmox-cleanup.sh (Keeps Backups, ISOs & CT Templates Safe)",
         link: "https://github.com/sohag1192/System-Cleanup-Script/blob/main/proxmox/proxmox-cleanup.sh"
       },
+      docker: {
+        cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh | sudo bash",
+        wget: "wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/docker/Docker_log.sh",
+        desc: "🐳 Docker Optimizer: Docker_log.sh (Zero-Downtime Container Logs, Prune Images & Build Cache)",
+        link: "https://github.com/sohag1192/System-Cleanup-Script/blob/main/docker/Docker_log.sh"
+      },
       cleaning: {
         cmd: "curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh | sudo bash",
         wget: "wget -O cleaning.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/cleaning.sh",
@@ -690,7 +876,7 @@ sudo ./cleaning.sh</pre>
       document.getElementById('quick-view-link').href = data.link;
 
       // Update Tab Buttons UI
-      const tabs = ['ubuntu', 'proxmox', 'cleaning'];
+      const tabs = ['ubuntu', 'proxmox', 'docker', 'cleaning'];
       tabs.forEach(t => {
         const btn = document.getElementById('btn-tab-' + t);
         if (t === tab) {
@@ -801,6 +987,18 @@ sudo ./cleaning.sh</pre>
         'trouble-title': 'Troubleshooting: Script Not Working or Line Ending Errors?',
         'trouble-desc': 'If you downloaded or edited the script on Windows and transferred it to Linux, you may encounter errors like:',
         'trouble-fix-title': '✅ The 2-Step Solution (dos2unix):',
+        'nav-faq': 'FAQ',
+        'faq-title': 'Frequently Asked Questions',
+        'faq-sub': 'Everything you need to know about safe system cleanup and space optimization.',
+        'faq-q1': 'How do I safely clean disk space on an Ubuntu or Debian server?',
+        'faq-a1': 'Run the one-liner command: curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash. It vacuums systemd journals older than 7 days, safely truncates active logs to 0 bytes without deleting files, flushes APT caches, and frees gigabytes of space without crashing running services.',
+        'faq-q2': 'Does the Proxmox VE cleanup script delete VM backups or templates?',
+        'faq-a2': 'No, absolutely not. proxmox/proxmox-cleanup.sh strictly protects your VM & container backup archives (/var/lib/vz/dump/), OS ISO images (/var/lib/vz/template/iso/), and container templates (/var/lib/vz/template/cache/). Only host systemd journals, rotated logs, and APT caches are cleaned.',
+        'faq-q3': 'Why does safe log truncation use \'truncate -s 0\' instead of \'rm\'?',
+        'faq-a3': 'When you delete an active log file using rm, running services (like Nginx, Apache, or MySQL) keep writing to the open file descriptor in memory. The disk space is not actually freed until the daemon is restarted. Truncating the file with truncate -s 0 or : > file.log frees the disk space immediately without closing file descriptors or interrupting active services.',
+        'faq-q4': 'How do I fix the "$'\\r': command not found" error in Bash?',
+        'faq-a4': 'This happens when a script has Windows CRLF line endings. To fix it, run:',
+        'faq-a4-sub': 'or use sed without installing anything:',
         'lang-btn': 'বাংলা'
       },
       bn: {
@@ -830,6 +1028,18 @@ sudo ./cleaning.sh</pre>
         'trouble-title': 'সমস্যা সমাধান: স্ক্রিপ্ট কাজ করছে না বা লাইনে এরর দিচ্ছে?',
         'trouble-desc': 'উইন্ডোজে ডাউনলোড বা এডিট করে লিনাক্সে পাঠালে CRLF এরর যেমন $’\\r’ command not found দেখা দিতে পারে:',
         'trouble-fix-title': '✅ মাত্র ২টি ধাপে সমাধান (dos2unix):',
+        'nav-faq': 'সাধারণ জিজ্ঞাসা',
+        'faq-title': 'সচরাচর জিজ্ঞাসিত প্রশ্নাবলী (FAQ)',
+        'faq-sub': 'সার্ভারের নিরাপদ ডিস্ক ক্লিনআপ সম্পর্কিত সব জরুরি তথ্যাবলী।',
+        'faq-q1': 'উবুন্টু বা ডেবিয়ান সার্ভারে কীভাবে নিরাপদে ডিস্ক স্পেস খালি করবেন?',
+        'faq-a1': 'এই এক লাইনের কমান্ডটি চালান: curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/ubuntu/log_cleanup.sh | sudo bash। এটি ৭ দিনের পুরনো systemd জার্নাল পরিষ্কার করে, ফাইল না মুছে ০ বাইটে ট্রাঙ্কেট করে, APT ক্যাশ খালি করে এবং রানিং সার্ভিস বন্ধ না করেই গিগাবাইট স্পেস মুক্ত করে।',
+        'faq-q2': 'Proxmox VE স্ক্রিপ্ট কি ভিএম ব্যাকআপ বা আইএসও ইমেজ মুছে ফেলে?',
+        'faq-a2': 'না, কখনোই নয়। proxmox/proxmox-cleanup.sh স্ক্রিপ্টটি আপনার ভিএম ও কনটেইনার ব্যাকআপ (/var/lib/vz/dump/), ওএস আইএসও ইমেজ (/var/lib/vz/template/iso/) এবং টেমপ্লেট সম্পূর্ণ সুরক্ষিত রাখে। শুধুমাত্র হোস্টের জার্নাল লগ, অপ্রয়োজনীয় পুরনো লগ ও ক্যাশ ক্লিন করা হয়।',
+        'faq-q3': '\'rm\' এর পরিবর্তে কেন নিরাপদ ট্রাঙ্কেশন \'truncate -s 0\' ব্যবহার করা হয়?',
+        'faq-a3': '\'rm\' দিয়ে রানিং লগ ফাইল মুছে ফেললে প্রসেসগুলো মেমোরিতে আগের ফাইল হ্যান্ডেলটি ধরে রাখে, ফলে সার্ভিস রিস্টার্ট না দেওয়া পর্যন্ত ডিস্ক খালি হয় না। পক্ষান্তরে \'truncate -s 0\' বা \': > file.log\' সার্ভিস বন্ধ না করেই তাৎক্ষণিক সম্পূর্ণ ডিস্ক স্পেস ফিরিয়ে দেয়।',
+        'faq-q4': 'ব্যাশে "$\'\\r\': command not found" এরর কীভাবে ঠিক করবেন?',
+        'faq-a4': 'উইন্ডোজের CRLF লাইন এন্ডিং থাকলে এই সমস্যা হয়। এটি ঠিক করতে চালান:',
+        'faq-a4-sub': 'অথবা কোনো সফটওয়্যার ছাড়া sed দিয়ে চালান:',
         'lang-btn': 'English'
       }
     };
