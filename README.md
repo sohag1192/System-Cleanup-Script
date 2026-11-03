@@ -216,7 +216,7 @@ sed -i 's/\r$//' *.sh
 Network & IT Infrastructure Specialist  
 * **GitHub:** [@sohag1192](https://github.com/sohag1192)  
 * **Email:** [sohag1192@gmail.com](mailto:sohag1192@gmail.com)  
-* **Telegram:** [@sohag1192](https://t.me/sohag1192)
+* **Telegram:** [@Md_Sohag_Rana](https://t.me/Md_Sohag_Rana)
 
 ---
 
