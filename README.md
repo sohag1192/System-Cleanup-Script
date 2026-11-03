@@ -4,7 +4,7 @@
 
 **Production-grade, automated Linux & Proxmox disk cleanup and log optimization tools.**
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsohag1192%2FSystem-Cleanup-Script&count_bg=%2322c55e&title_bg=%231f2937&icon=&icon_color=%23ffffff&title=Total%20%7C%20Today%20Views&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Views (Today / Total)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script/)
 [![GitHub Stars](https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold)](https://github.com/sohag1192/System-Cleanup-Script/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue)](https://github.com/sohag1192/System-Cleanup-Script/network/members)
 [![License](https://img.shields.io/github/license/sohag1192/System-Cleanup-Script?style=for-the-badge&color=green)](LICENSE)
@@ -115,36 +115,72 @@ sudo ./proxmox-cleanup.sh
 
 ---
 
-## ⏰ Automate with Cron (Scheduled Maintenance)
+## ⏰ Automate with Cron (One-Liner Setup & Management)
 
-To keep your servers clean automatically without manual intervention:
+You can automate cleanup without manually opening or editing crontab files by using these one-liner commands:
 
-1. Open root crontab:
-   ```bash
-   sudo crontab -e
-   ```
+### ⚡ Option 1: Instant One-Liner (No editor required - Recommended)
 
-2. Add one of the following schedules (replace with your desired script path):
+**For Ubuntu / Debian (Daily at 3:00 AM):**
+```bash
+(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
 
-   * **Daily at 3:00 AM (Recommended for high-traffic servers):**
-     ```cron
-     0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+**For Proxmox VE (Daily at 3:00 AM):**
+```bash
+(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /usr/local/bin/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
 
-   * **Weekly on Sunday at 2:00 AM:**
-     ```cron
-     0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+**Alternative: System-wide Cron (`/etc/cron.d/`):**
+```bash
+echo "0 3 * * * root /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
+```
 
-   * **Monthly on the 1st day at 4:00 AM:**
-     ```cron
-     0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+---
 
-3. Ensure cron service is running:
-   ```bash
-   sudo systemctl enable --now cron
-   ```
+### 🗑️ Remove from Cron (One-liner using `sed`)
+
+To remove or disable the scheduled cleanup job instantly without opening an editor:
+```bash
+# Remove from root crontab using sed:
+sudo crontab -l | sed '/cleanup.*\.sh/d' | sudo crontab -
+
+# Or remove /etc/cron.d file if created:
+sudo rm -f /etc/cron.d/system_cleanup
+```
+
+---
+
+### 📝 Option 2: Manual Crontab Setup
+
+If you prefer editing crontab manually:
+```bash
+sudo crontab -e
+```
+Add one of the following lines:
+* **Daily at 3:00 AM (Recommended for active servers):**
+  ```cron
+  0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+* **Weekly on Sunday at 2:00 AM:**
+  ```cron
+  0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+* **Monthly on the 1st day at 4:00 AM:**
+  ```cron
+  0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+
+---
+
+### 🔍 Verify Cron Status
+```bash
+# View active cron jobs:
+sudo crontab -l
+
+# Ensure cron daemon is running:
+sudo systemctl enable --now cron
+```
 
 ---
 

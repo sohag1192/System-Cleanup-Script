@@ -4,7 +4,7 @@
 
 **লিনাক্স (Ubuntu/Debian) ও Proxmox সার্ভারের অটোমেটিক ডিস্ক ক্লিনআপ এবং লগ অপ্টিমাইজেশন টুলস।**
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsohag1192%2FSystem-Cleanup-Script&count_bg=%2322c55e&title_bg=%231f2937&icon=&icon_color=%23ffffff&title=Total%20%7C%20Today%20Views&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Views (Today / Total)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script/)
 [![GitHub Stars](https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold)](https://github.com/sohag1192/System-Cleanup-Script/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue)](https://github.com/sohag1192/System-Cleanup-Script/network/members)
 [![License](https://img.shields.io/github/license/sohag1192/System-Cleanup-Script?style=for-the-badge&color=green)](LICENSE)
@@ -115,36 +115,72 @@ sudo ./proxmox-cleanup.sh
 
 ---
 
-## ⏰ ক্রন জব দিয়ে অটোমেশন (Scheduled Cleanup)
+## ⏰ ক্রন জব দিয়ে অটোমেশন (One-Liner Setup & Management)
 
-সার্ভার নিজে থেকেই নির্দিষ্ট সময় পর পর ক্লিন করতে রুট ক্রন জবে শিডিউল সেট করুন:
+ম্যানুয়ালি ফাইল ওপেন না করেই টার্মিনালে এক কমান্ডে ক্রন জব সেট ও ম্যানেজ করতে পারবেন:
 
-১. ক্রনট্যাব এডিট করুন:
-   ```bash
-   sudo crontab -e
-   ```
+### ⚡ অপশন ১: এক লাইনে অটো-সেটআপ (Recommended - কোনো এডিটর লাগবে না)
 
-২. যেকোনো একটি শিডিউল যোগ করুন (আপনার প্রয়োজন অনুযায়ী স্ক্রিপ্ট পাথ দিন):
+**Ubuntu / Debian সার্ভারের জন্য (প্রতিদিন রাত ৩:০০ টায়):**
+```bash
+(sudo crontab -l 2>/dev/null | grep -v "log_cleanup.sh"; echo "0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
 
-   * **প্রতিদিন রাত ৩:০০ টায় (হাই-ট্রাফিক সার্ভারের জন্য উপযুক্ত):**
-     ```cron
-     0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+**Proxmox VE সার্ভারের জন্য (প্রতিদিন রাত ৩:০০ টায়):**
+```bash
+(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /usr/local/bin/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+```
 
-   * **প্রতি সপ্তাহে রবিবার রাত ২:০০ টায়:**
-     ```cron
-     0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+**সিস্টেম-ওয়াইড ক্রন ফাইল তৈরি (`/etc/cron.d/`):**
+```bash
+echo "0 3 * * * root /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1" | sudo tee /etc/cron.d/system_cleanup
+```
 
-   * **প্রতি মাসের ১ তারিখ ভোর ৪:০০ টায়:**
-     ```cron
-     0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
-     ```
+---
 
-৩. ক্রন সার্ভিস রানিং আছে কিনা নিশ্চিত করুন:
-   ```bash
-   sudo systemctl enable --now cron
-   ```
+### 🗑️ ক্রন জব বন্ধ বা রিমুভ করার কমান্ড (`sed` ব্যবহার করে)
+
+ম্যানুয়ালি এডিট না করে এক কমান্ডে ক্রন জব রিমুভ করতে:
+```bash
+# sed দিয়ে রুট ক্রনট্যাব থেকে স্বয়ংক্রিয়ভাবে মুছে ফেলতে:
+sudo crontab -l | sed '/cleanup.*\.sh/d' | sudo crontab -
+
+# অথবা /etc/cron.d ফাইল মুছে দিতে:
+sudo rm -f /etc/cron.d/system_cleanup
+```
+
+---
+
+### 📝 অপশন ২: ম্যানুয়াল ক্রনট্যাব সেটআপ
+
+আপনি যদি নিজে এডিটরে খুলে সেট করতে চান:
+```bash
+sudo crontab -e
+```
+নিচের যেকোনো একটি লাইন পেস্ট করে সেভ করুন:
+* **প্রতিদিন রাত ৩:০০ টায় (প্রস্তাবিত):**
+  ```cron
+  0 3 * * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+* **প্রতি সপ্তাহে রবিবার রাত ২:০০ টায়:**
+  ```cron
+  0 2 * * 0 /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+* **প্রতি মাসের ১ তারিখ ভোর ৪:০০ টায়:**
+  ```cron
+  0 4 1 * * /usr/local/bin/log_cleanup.sh >> /var/log/cleanup_cron.log 2>&1
+  ```
+
+---
+
+### 🔍 ক্রন জবের স্ট্যাটাস চেক
+```bash
+# সক্রিয় ক্রন জব দেখতে:
+sudo crontab -l
+
+# ক্রন সার্ভিস চালু আছে কিনা নিশ্চিত করতে:
+sudo systemctl enable --now cron
+```
 
 ---
 
