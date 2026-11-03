@@ -39,6 +39,7 @@
 | **Ubuntu / Debian** | [`ubuntu/log_cleanup.sh`](ubuntu/log_cleanup.sh) | 🌟 **সবচেয়ে নিরাপদ ও ভারসাম্যপূর্ণ:** সিস্টেম জার্নাল লগ পরিষ্কার করে (`journalctl --vacuum-time=7d`), লগইন হিস্ট্রি (`wtmp`/`btmp`) অক্ষত রাখে, কোনো জরুরি প্যাকেজ ডিলিট করে না এবং ডিস্ক ব্যবহারের ফাইনাল রিপোর্ট দেখায়। |
 | **Proxmox VE** | [`proxmox/proxmox-cleanup.sh`](proxmox/proxmox-cleanup.sh) | 🌟 **১০০% স্টোরেজ সুরক্ষিত:** জার্নাল ও সার্ভিস লগ এবং APT ক্যাশ ক্লিন করে, কিন্তু **Backups (`/var/lib/vz/dump/`)**, **ISO Images (`/var/lib/vz/template/iso/`)** এবং **CT Templates (`/var/lib/vz/template/cache/`)**-এর কোনো ফাইলে হাত দেয় না। |
 | **Docker Engine** | [`docker/Docker_log.sh`](docker/Docker_log.sh) | 🐳 **জিরো-ডাউনটাইম লগ ক্লিনার:** কন্টেইনার বন্ধ না করেই JSON লগ (`*-json.log`) ট্রাঙ্কেট করে, ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ মুছে দেয় কিন্তু গুরুত্বপূর্ণ ডাটা ভলিউম সুরক্ষিত রাখে। |
+| **Cacti Monitoring** | [`cacti/cacti_log.sh`](cacti/cacti_log.sh) | 🌵 **সুরক্ষিত Cacti ও Spine ক্লিনার:** পারমিশন বা পোলার নষ্ট না করে `cacti.log` ও `spine.log` ট্রাঙ্কেট করে, রোটেটেড আর্কাইভ মুছে দেয় এবং RRA (`.rrd`) মেট্রিক গ্রাফ সম্পূর্ণ অক্ষত রাখে। |
 
 ---
 
@@ -57,6 +58,8 @@ System-Cleanup-Script/
 │   └── proxmox_clean.sh         # লাইটওয়েট Proxmox স্ক্রিপ্ট
 ├── docker/                      # ডকার লগ ও ক্যাশ অপ্টিমাইজেশন
 │   └── Docker_log.sh            # 🐳 কন্টেইনার JSON লগ ট্রাঙ্কেট ও ডকার ক্যাশ ক্লিনার
+├── cacti/                       # ক্যাকটি নেটওয়ার্ক মনিটরিং ক্লিনআপ স্ক্রিপ্ট
+│   └── cacti_log.sh             # 🌵 Cacti লগ, Spine পোলার লগ ও ক্যাশ ক্লিনার
 ├── upload.bat                   # উইন্ডোজ গিট অটো-কমিট ও পুশ স্ক্রিপ্ট
 ├── .gitattributes               # শেল স্ক্রিপ্টের জন্য Unix LF লাইন এন্ডিং নিশ্চিত করে
 ├── LICENSE                      # MIT লাইসেন্স
@@ -88,14 +91,14 @@ sudo /root/log_cleanup.sh
 
 **এক লাইনে সরাসরি রান করুন:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | bash
 ```
 
 **`/root/` ডিরেক্টরিতে ডাউনলোড ও রান:**
 ```bash
-sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
-sudo chmod +x /root/proxmox-cleanup.sh
-sudo /root/proxmox-cleanup.sh
+wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
+chmod +x /root/proxmox-cleanup.sh
+/root/proxmox-cleanup.sh
 ```
 
 > [!IMPORTANT]
@@ -119,21 +122,42 @@ sudo /root/Docker_log.sh
 
 ---
 
+### ৪. Cacti নেটওয়ার্ক মনিটরিং সার্ভারের জন্য (`cacti_log.sh`)
+
+**এক লাইনে সরাসরি রান করুন:**
+```bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh | sudo bash
+```
+
+**`/root/` ডিরেক্টরিতে ডাউনলোড ও রান:**
+```bash
+sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh
+sudo chmod +x /root/cacti_log.sh
+sudo /root/cacti_log.sh
+```
+
+> [!IMPORTANT]
+> **RRA / গ্রাফ ডাটা সুরক্ষা:** `cacti/cacti_log.sh` স্ক্রিপ্টটি আপনার Cacti সার্ভারের **`.rrd` গ্রাফ ফাইল** এবং **`rra/` ফোল্ডার** ১০০% অক্ষত রাখবে। আপনার নেটওয়ার্ক ডিভাইসের পূর্ববর্তী ব্যান্ডউইথ হিস্ট্রি সম্পূর্ণ সুরক্ষিত থাকবে!
+
+---
+
 ## 📊 বিস্তারিত ফিচার তুলনা (Feature Matrix)
 
-| ফিচার | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `ubuntu/cleaning.sh` |
-| :--- | :---: | :---: | :---: | :---: |
-| **সিস্টেম লগ ট্রাঙ্কেট** | ✅ (`truncate -s 0`) | ❌ (শুধুমাত্র ডকার লগ) | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) |
-| **কন্টেইনার JSON লগ ট্রাঙ্কেট** | ✅ (স্বয়ংক্রিয়) | ✅ (`*-json.log`) | ❌ | ❌ |
-| **ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ |
-| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ |
-| **`wtmp` / `btmp` লগইন ফাইল রক্ষা** | ✅ (সুরক্ষিত) | N/A | ✅ (সুরক্ষিত) | ❌ |
-| **পুরনো রোটেটেড লগ (`.gz`, `.[0-9]`)** | ✅ ডিলিট হয় | ❌ | ✅ ডিলিট হয় | ✅ ডিলিট হয় |
-| **APT ক্যাশ ও Autoclean** | ✅ | ❌ | ✅ | ✅ |
-| **অরফান প্যাকেজ রিমুভ (`deborphan`)** | ✅ নিরাপদ | ❌ | ✅ নিরাপদ | ✅ |
-| **রিসাইকেল ট্র্যাশ ক্লিন** | ✅ | ❌ | ✅ | ✅ |
-| **Backups ও ISO Images অক্ষত রাখা** | N/A | N/A | ✅ **১০০% সুরক্ষিত** | N/A |
-| **ডিস্ক রেজাল্ট রিপোর্ট** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ❌ |
+| ফিচার | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `cacti/cacti_log.sh` 🌵 | `ubuntu/cleaning.sh` |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **সিস্টেম লগ ট্রাঙ্কেট** | ✅ (`truncate -s 0`) | ❌ (শুধুমাত্র ডকার লগ) | ✅ (`truncate -s 0`) | ❌ (শুধুমাত্র Cacti লগ) | ✅ (`truncate -s 0`) |
+| **Cacti Poller ও Spine লগ ট্রাঙ্কেট** | ❌ | ❌ | ❌ | ✅ (`truncate -s 0`) | ✅ (Auto-detects) |
+| **কন্টেইনার JSON লগ ট্রাঙ্কেট** | ✅ (স্বয়ংক্রিয়) | ✅ (`*-json.log`) | ❌ | ❌ | ❌ |
+| **ড্যাংলিং ইমেজ ও বিল্ড ক্যাশ Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ | ❌ |
+| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ | ❌ |
+| **`wtmp` / `btmp` লগইন ফাইল রক্ষা** | ✅ (সুরক্ষিত) | N/A | ✅ (সুরক্ষিত) | N/A | ❌ |
+| **পুরনো রোটেটেড লগ (`.gz`, `.[0-9]`)** | ✅ ডিলিট হয় | ❌ | ✅ ডিলিট হয় | ✅ ডিলিট হয় | ✅ ডিলিট হয় |
+| **APT ক্যাশ ও Autoclean** | ✅ | ❌ | ✅ | ❌ | ✅ |
+| **অরফান প্যাকেজ রিমুভ (`deborphan`)** | ✅ নিরাপদ | ❌ | ✅ নিরাপদ | ❌ | ✅ |
+| **রিসাইকেল ট্র্যাশ ক্লিন** | ✅ | ❌ | ✅ | ❌ | ✅ |
+| **Backups ও ISO Images অক্ষত রাখা** | N/A | N/A | ✅ **১০০% সুরক্ষিত** | N/A | N/A |
+| **RRA / গ্রাফ মেট্রিক্স (`.rrd`) অক্ষত রাখা** | N/A | N/A | N/A | ✅ **১০০% সুরক্ষিত** | ✅ **সুরক্ষিত** |
+| **ডিস্ক রেজাল্ট রিপোর্ট** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ✅ (`df -h`) | ❌ |
 
 ---
 
@@ -155,10 +179,10 @@ sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/Sy
 **Proxmox VE সার্ভারের জন্য (প্রতিদিন রাত ৩:০০ টায়):**
 ```bash
 # ১. /root/proxmox-cleanup.sh এ ডাউনলোড করুন
-sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && sudo chmod +x /root/proxmox-cleanup.sh
+wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && chmod +x /root/proxmox-cleanup.sh
 
 # ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
-(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+(crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | crontab -
 ```
 
 **Docker হোস্টের জন্য (প্রতি সপ্তাহে রবিবার রাত ৩:৩০ টায়):**
@@ -168,6 +192,15 @@ sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/Sys
 
 # ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
 (sudo crontab -l 2>/dev/null | grep -v "Docker_log.sh"; echo "30 3 * * 0 /root/Docker_log.sh >> /var/log/docker_cleanup_cron.log 2>&1") | sudo crontab -
+```
+
+**Cacti সার্ভারের জন্য (প্রতিদিন রাত ৩:১৫ টায়):**
+```bash
+# ১. /root/cacti_log.sh এ ডাউনলোড করুন
+sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh && sudo chmod +x /root/cacti_log.sh
+
+# ২. এক কমান্ডে ক্রনট্যাবে যুক্ত করুন
+(sudo crontab -l 2>/dev/null | grep -v "cacti_log.sh"; echo "15 3 * * * /root/cacti_log.sh >> /var/log/cacti_cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **সিস্টেম-ওয়াইড ক্রন ফাইল তৈরি (`/etc/cron.d/`):**

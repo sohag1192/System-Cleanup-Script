@@ -2,6 +2,12 @@
 # Proxmox Cache & Log Cleanup Script
 # Author: Md. Sohag Rana (adapted for Proxmox)
 
+# Ensure script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "[-] Error: This script must be run as root." >&2
+  exit 1
+fi
+
 echo "=== Starting Proxmox cleanup ==="
 
 # Clear Nginx/RTMP logs if present

@@ -4,7 +4,8 @@
 # Author: Sohag1192
 # Purpose: Free up disk space by cleaning cache,
 #          logs, orphaned packages, trash,
-#          Nginx logs, Flussonic logs, Apache2 logs, and more.
+#          Nginx logs, Flussonic logs, Apache2 logs,
+#          MySQL logs, Cacti logs, and more.
 # ============================================
 
 echo ">>> Starting system cleanup..."
@@ -58,6 +59,22 @@ if [ -d "/var/log/mysql" ]; then
   echo "MySQL logs cleaned."
 else
   echo "MySQL log directory not found."
+fi
+
+# --- Clear Cacti Logs ---
+echo "Clearing Cacti logs..."
+cacti_found=0
+for cdir in "/var/log/cacti" "/var/www/html/cacti/log" "/var/www/cacti/log" "/usr/share/cacti/log" "/opt/cacti/log"; do
+  if [ -d "$cdir" ]; then
+    find "$cdir" -type f -name "*.log" -exec truncate -s 0 {} \; 2>/dev/null
+    find "$cdir" -type f -regex ".*\.gz$" -delete 2>/dev/null
+    find "$cdir" -type f -regex ".*\.[0-9]$" -delete 2>/dev/null
+    echo "Cacti logs cleaned ($cdir)."
+    cacti_found=1
+  fi
+done
+if [ "$cacti_found" -eq 0 ]; then
+  echo "Cacti log directory not found."
 fi
 
 # --- Show Cache Size Before Cleanup ---

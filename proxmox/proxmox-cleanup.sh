@@ -6,6 +6,12 @@
 #          (Safe: Keeps Backups, ISO Images, and CT Templates untouched)
 #===========================================================
 
+# Ensure script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "[-] Error: This script must be run as root." >&2
+  exit 1
+fi
+
 echo "=== Starting Proxmox logs & cache cleanup ==="
 
 # 1. Clear Nginx/RTMP logs (if present)

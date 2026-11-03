@@ -39,6 +39,7 @@ This repository provides **battle-tested shell scripts** organized into separate
 | **Ubuntu / Debian** | [`ubuntu/log_cleanup.sh`](ubuntu/log_cleanup.sh) | 🌟 **Most balanced & safe**: Cleans systemd journal logs (`journalctl`), protects security logs (`wtmp`/`btmp`), truncates without crashing services, and does not remove essential system tools. |
 | **Proxmox VE** | [`proxmox/proxmox-cleanup.sh`](proxmox/proxmox-cleanup.sh) | 🌟 **100% Storage Safe**: Vacuums journals, truncates logs and APT caches while strictly protecting **Backups (`/var/lib/vz/dump/`)**, **ISO Images (`/var/lib/vz/template/iso/`)**, and **CT Templates (`/var/lib/vz/template/cache/`)**. |
 | **Docker Engine** | [`docker/Docker_log.sh`](docker/Docker_log.sh) | 🐳 **Zero-downtime log cleaner**: Safely truncates container JSON logs without stopping containers, prunes dangling images, build cache, and stopped containers while preserving data volumes. |
+| **Cacti Monitoring** | [`cacti/cacti_log.sh`](cacti/cacti_log.sh) | 🌵 **Safe Cacti & Spine Cleaner**: Safely truncates `cacti.log` and `spine.log` without breaking file permissions, deletes rotated archives, cleans cache, and strictly protects all `.rrd` performance metric graphs. |
 
 ---
 
@@ -57,6 +58,8 @@ System-Cleanup-Script/
 │   └── proxmox_clean.sh         # Lightweight Proxmox cleanup
 ├── docker/                      # Docker Optimization & Cleanup
 │   └── Docker_log.sh            # 🐳 Truncates container JSON logs & prunes cache/images
+├── cacti/                       # Cacti Network Monitoring Cleanup Scripts
+│   └── cacti_log.sh             # 🌵 Truncates Cacti logs, Spine poller logs & cache
 ├── upload.bat                   # Windows batch script for automated git commit & push
 ├── .gitattributes               # Enforces Unix LF line endings for shell scripts
 ├── LICENSE                      # MIT License
@@ -88,14 +91,14 @@ sudo /root/log_cleanup.sh
 
 **Direct Run (One-liner):**
 ```bash
-curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh | bash
 ```
 
 **Download to `/root/` & Run:**
 ```bash
-sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
-sudo chmod +x /root/proxmox-cleanup.sh
-sudo /root/proxmox-cleanup.sh
+wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh
+chmod +x /root/proxmox-cleanup.sh
+/root/proxmox-cleanup.sh
 ```
 
 > [!IMPORTANT]
@@ -119,21 +122,42 @@ sudo /root/Docker_log.sh
 
 ---
 
+### 4. For Cacti Monitoring Server (`cacti_log.sh`)
+
+**Direct Run (One-liner):**
+```bash
+curl -sSL https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh | sudo bash
+```
+
+**Download to `/root/` & Run:**
+```bash
+sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh
+sudo chmod +x /root/cacti_log.sh
+sudo /root/cacti_log.sh
+```
+
+> [!IMPORTANT]
+> **RRA / Graph Data Safety**: `cacti/cacti_log.sh` strictly protects your **`.rrd` graph files** and **`rra/` directories**. Your historical bandwidth and device metrics are 100% safe!
+
+---
+
 ## 📊 Comprehensive Feature Comparison
 
-| Feature | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `ubuntu/cleaning.sh` |
-| :--- | :---: | :---: | :---: | :---: |
-| **System Log Truncation** | ✅ (`truncate -s 0`) | ❌ (Docker logs only) | ✅ (`truncate -s 0`) | ✅ (`truncate -s 0`) |
-| **Container JSON Log Truncation** | ✅ (Automatic) | ✅ (`*-json.log`) | ❌ | ❌ |
-| **Dangling Images & Build Cache Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ |
-| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ |
-| **`wtmp` / `btmp` Login Safe** | ✅ (Protected) | N/A | ✅ (Protected) | ❌ |
-| **Old Compressed Logs (`.gz`, `.[0-9]`)** | ✅ Deleted | ❌ | ✅ Deleted | ✅ Deleted |
-| **APT Cache & Autoclean** | ✅ | ❌ | ✅ | ✅ |
-| **Orphaned Packages (`deborphan`)** | ✅ Safe | ❌ | ✅ Safe | ✅ |
-| **Trash Folder Cleanup** | ✅ | ❌ | ✅ | ✅ |
-| **Protects Backups & ISO Images** | N/A | N/A | ✅ **100% Untouched** | N/A |
-| **Displays Disk Report** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ❌ |
+| Feature | `ubuntu/log_cleanup.sh` ⭐ | `docker/Docker_log.sh` 🐳 | `proxmox/proxmox-cleanup.sh` ⭐ | `cacti/cacti_log.sh` 🌵 | `ubuntu/cleaning.sh` |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **System Log Truncation** | ✅ (`truncate -s 0`) | ❌ (Docker logs only) | ✅ (`truncate -s 0`) | ❌ (Cacti logs only) | ✅ (`truncate -s 0`) |
+| **Cacti Poller & Spine Log Truncation** | ❌ | ❌ | ❌ | ✅ (`truncate -s 0`) | ✅ (Auto-detects) |
+| **Container JSON Log Truncation** | ✅ (Automatic) | ✅ (`*-json.log`) | ❌ | ❌ | ❌ |
+| **Dangling Images & Build Cache Prune** | ❌ | ✅ (`docker prune`) | ❌ | ❌ | ❌ |
+| **Systemd Journal Vacuum** | ✅ (`--vacuum-time=7d`) | ❌ | ✅ (`--vacuum-time=7d`) | ❌ | ❌ |
+| **`wtmp` / `btmp` Login Safe** | ✅ (Protected) | N/A | ✅ (Protected) | N/A | ❌ |
+| **Old Compressed Logs (`.gz`, `.[0-9]`)** | ✅ Deleted | ❌ | ✅ Deleted | ✅ Deleted | ✅ Deleted |
+| **APT Cache & Autoclean** | ✅ | ❌ | ✅ | ❌ | ✅ |
+| **Orphaned Packages (`deborphan`)** | ✅ Safe | ❌ | ✅ Safe | ❌ | ✅ |
+| **Trash Folder Cleanup** | ✅ | ❌ | ✅ | ❌ | ✅ |
+| **Protects Backups & ISO Images** | N/A | N/A | ✅ **100% Untouched** | N/A | N/A |
+| **Protects RRA / Graph Metrics (`.rrd`)** | N/A | N/A | N/A | ✅ **100% Untouched** | ✅ **Untouched** |
+| **Displays Disk Report** | ✅ (`df -h`) | ✅ (`docker system df`) | ❌ | ✅ (`df -h`) | ❌ |
 
 ---
 
@@ -155,10 +179,10 @@ sudo wget -O /root/log_cleanup.sh https://raw.githubusercontent.com/sohag1192/Sy
 **For Proxmox VE (Daily at 3:00 AM):**
 ```bash
 # 1. Download to /root/proxmox-cleanup.sh
-sudo wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && sudo chmod +x /root/proxmox-cleanup.sh
+wget -O /root/proxmox-cleanup.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/proxmox/proxmox-cleanup.sh && chmod +x /root/proxmox-cleanup.sh
 
 # 2. Add to crontab in one command
-(sudo crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | sudo crontab -
+(crontab -l 2>/dev/null | grep -v "proxmox-cleanup.sh"; echo "0 3 * * * /root/proxmox-cleanup.sh >> /var/log/cleanup_cron.log 2>&1") | crontab -
 ```
 
 **For Docker Host (Weekly on Sunday at 3:30 AM):**
@@ -168,6 +192,15 @@ sudo wget -O /root/Docker_log.sh https://raw.githubusercontent.com/sohag1192/Sys
 
 # 2. Add to crontab in one command
 (sudo crontab -l 2>/dev/null | grep -v "Docker_log.sh"; echo "30 3 * * 0 /root/Docker_log.sh >> /var/log/docker_cleanup_cron.log 2>&1") | sudo crontab -
+```
+
+**For Cacti Monitoring Server (Daily at 3:15 AM):**
+```bash
+# 1. Download to /root/cacti_log.sh
+sudo wget -O /root/cacti_log.sh https://raw.githubusercontent.com/sohag1192/System-Cleanup-Script/main/cacti/cacti_log.sh && sudo chmod +x /root/cacti_log.sh
+
+# 2. Add to crontab in one command
+(sudo crontab -l 2>/dev/null | grep -v "cacti_log.sh"; echo "15 3 * * * /root/cacti_log.sh >> /var/log/cacti_cleanup_cron.log 2>&1") | sudo crontab -
 ```
 
 **Alternative: System-wide Cron (`/etc/cron.d/`):**
