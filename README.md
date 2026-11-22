@@ -5,6 +5,8 @@
 **Production-grade, automated Linux & Proxmox disk cleanup and log optimization tools.**
 
 [![Views (Today / Total)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script/)
+[![Latest Release](https://img.shields.io/github/v/release/sohag1192/System-Cleanup-Script?style=for-the-badge&color=blue&logo=github)](https://github.com/sohag1192/System-Cleanup-Script/releases/latest)
+[![Download ZIP](https://img.shields.io/badge/Download-Latest%20ZIP-0284c7?style=for-the-badge&logo=archive&logoColor=white)](https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip)
 [![Live Web Docs](https://img.shields.io/badge/Web%20Portal-Live%20Site-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)](https://sohag1192.github.io/System-Cleanup-Script/)
 [![GitHub Stars](https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold)](https://github.com/sohag1192/System-Cleanup-Script/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue)](https://github.com/sohag1192/System-Cleanup-Script/network/members)
@@ -16,6 +18,8 @@
 
 <p align="center">
   <a href="https://sohag1192.github.io/System-Cleanup-Script/">🌐 <b>Live Web Portal</b></a> •
+  <a href="https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip">📦 <b>Download ZIP</b></a> •
+  <a href="https://github.com/sohag1192/System-Cleanup-Script/releases">🏷️ <b>Releases</b></a> •
   <a href="README.md"><b>English</b></a> •
   <a href="README.bn.md"><b>বাংলা (Bengali)</b></a>
 </p>
@@ -138,6 +142,35 @@ sudo /root/cacti_log.sh
 
 > [!IMPORTANT]
 > **RRA / Graph Data Safety**: `cacti/cacti_log.sh` strictly protects your **`.rrd` graph files** and **`rra/` directories**. Your historical bandwidth and device metrics are 100% safe!
+
+---
+
+### 5. 📦 Download Complete Scripts Bundle (ZIP Archive)
+
+If you prefer to download all scripts at once as a single `.zip` archive rather than individual files:
+
+**Direct Browser Download:**
+* ⬇️ **[Download Source ZIP (Latest main)](https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip)**
+* 🏷️ **[View All GitHub Releases & Tags](https://github.com/sohag1192/System-Cleanup-Script/releases)**
+
+**Download & Extract via Linux Terminal:**
+```bash
+# Using wget:
+wget -O System-Cleanup-Script.zip https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip
+unzip System-Cleanup-Script.zip
+cd System-Cleanup-Script-main
+
+# Or using curl:
+curl -sSL -o System-Cleanup-Script.zip https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip
+unzip System-Cleanup-Script.zip
+cd System-Cleanup-Script-main
+
+# Make all scripts executable:
+chmod +x ubuntu/*.sh proxmox/*.sh docker/*.sh cacti/*.sh
+
+# Run any cleanup script (e.g. recommended Ubuntu log cleaner):
+sudo ./ubuntu/log_cleanup.sh
+```
 
 ---
 
@@ -273,6 +306,15 @@ dos2unix *.sh
 # Method 2: Using sed
 sed -i 's/\r$//' *.sh
 ```
+
+---
+
+## 🏷️ Automated Releases & Versioning
+
+This repository is equipped with fully automated continuous delivery workflows:
+* **Automatic Version Tagging:** On every push to `main`, GitHub Actions automatically analyzes commit history, bumps the semantic version (`v1.0.0`, `v1.0.1`, `v1.1.0`), creates git tags, and creates an official GitHub Release.
+* **Pre-Packaged ZIP & TAR.GZ:** Pre-configured `.zip` and `.tar.gz` bundles with Unix LF line endings and executable flags (`chmod +x`) are automatically compiled and attached to every release.
+* **Always-Updated Download Links:** The latest release archive is permanently accessible via `System-Cleanup-Script-latest.zip` or the source archive link.
 
 ---
 

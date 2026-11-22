@@ -1,0 +1,177 @@
+name: Auto Release & Tagging
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.nojekyll'
+      - 'robots.txt'
+      - 'sitemap.xml'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Version bump type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Generate Auto Release & Tag
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip release]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Next Version Tag
+        id: tag_version
+        run: |
+          # Fetch all remote tags
+          git fetch --tags --force || true
+
+          # Find the latest semantic version tag
+          LATEST_TAG=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_TAG="v1.0.0"
+            echo "No existing semantic version tags found. Starting with initial release: $NEW_TAG"
+          else
+            echo "Latest semantic tag found: $LATEST_TAG"
+
+            # Parse version components
+            VERSION="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+
+            MAJOR=${MAJOR:-1}
+            MINOR=${MINOR:-0}
+            PATCH=${PATCH:-0}
+
+            # Determine bump type
+            BUMP_TYPE="${{ github.event.inputs.release_type || 'patch' }}"
+
+            if [ "${{ github.event_name }}" = "push" ]; then
+              COMMIT_MSG=$(git log -1 --pretty=%B)
+              if echo "$COMMIT_MSG" | grep -qiE "(BREAKING CHANGE|breaking:)"; then
+                BUMP_TYPE="major"
+              elif echo "$COMMIT_MSG" | grep -qiE "^(feat|feature)(\(.*\))?:"; then
+                BUMP_TYPE="minor"
+              fi
+            fi
+
+            case "$BUMP_TYPE" in
+              major)
+                MAJOR=$((MAJOR + 1))
+                MINOR=0
+                PATCH=0
+                ;;
+              minor)
+                MINOR=$((MINOR + 1))
+                PATCH=0
+                ;;
+              patch|*)
+                PATCH=$((PATCH + 1))
+                ;;
+            esac
+
+            NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          fi
+
+          # Ensure tag uniqueness in case of race
+          while git rev-parse "$NEW_TAG" >/dev/null 2>&1; do
+            echo "Tag $NEW_TAG already exists, bumping patch..."
+            PATCH=$((PATCH + 1))
+            NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          done
+
+          echo "NEW_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "Target Release Tag: $NEW_TAG"
+
+      - name: Package Release Archives (ZIP & TAR.GZ)
+        run: |
+          TAG="${{ steps.tag_version.outputs.NEW_TAG }}"
+          ARCHIVE_DIR="System-Cleanup-Script-${TAG}"
+          mkdir -p "$ARCHIVE_DIR"
+
+          # Copy directories and files
+          [ -d "ubuntu" ] && cp -r ubuntu "$ARCHIVE_DIR/"
+          [ -d "proxmox" ] && cp -r proxmox "$ARCHIVE_DIR/"
+          [ -d "docker" ] && cp -r docker "$ARCHIVE_DIR/"
+          [ -d "cacti" ] && cp -r cacti "$ARCHIVE_DIR/"
+          [ -f "README.md" ] && cp README.md "$ARCHIVE_DIR/"
+          [ -f "README.bn.md" ] && cp README.bn.md "$ARCHIVE_DIR/"
+          [ -f "LICENSE" ] && cp LICENSE "$ARCHIVE_DIR/"
+          [ -f ".gitattributes" ] && cp .gitattributes "$ARCHIVE_DIR/"
+
+          # Ensure all scripts are executable
+          find "$ARCHIVE_DIR" -type f -name "*.sh" -exec chmod +x {} \;
+
+          # Create release archives
+          zip -r "System-Cleanup-Script-${TAG}.zip" "$ARCHIVE_DIR"
+          tar -czf "System-Cleanup-Script-${TAG}.tar.gz" "$ARCHIVE_DIR"
+
+          # Generic latest named archives
+          cp "System-Cleanup-Script-${TAG}.zip" "System-Cleanup-Script-latest.zip"
+          cp "System-Cleanup-Script-${TAG}.tar.gz" "System-Cleanup-Script-latest.tar.gz"
+
+      - name: Create Git Tag
+        run: |
+          TAG="${{ steps.tag_version.outputs.NEW_TAG }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Automated Release $TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release & Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag_version.outputs.NEW_TAG }}
+          name: "Release ${{ steps.tag_version.outputs.NEW_TAG }} 🚀"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 🧹 System Cleanup & Space Optimization Script - ${{ steps.tag_version.outputs.NEW_TAG }}
+
+            Production-grade, automated Linux (Ubuntu, Debian), Proxmox VE, Docker, and Cacti disk cleanup tools.
+
+            ### 📦 Download Assets
+            - **[System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.zip](https://github.com/${{ github.repository }}/releases/download/${{ steps.tag_version.outputs.NEW_TAG }}/System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.zip)**
+            - **[System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ steps.tag_version.outputs.NEW_TAG }}/System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.tar.gz)**
+            - **[System-Cleanup-Script-latest.zip](https://github.com/${{ github.repository }}/releases/latest/download/System-Cleanup-Script-latest.zip)**
+            - **[Source Code (ZIP)](https://github.com/${{ github.repository }}/archive/refs/tags/${{ steps.tag_version.outputs.NEW_TAG }}.zip)**
+
+            ### ⚡ Quick One-Liner Execution
+            ```bash
+            # Ubuntu / Debian (Recommended)
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/ubuntu/log_cleanup.sh | sudo bash
+
+            # Proxmox VE (Storage Safe)
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/proxmox/proxmox-cleanup.sh | bash
+
+            # Docker Engine (Zero Downtime)
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/docker/Docker_log.sh | sudo bash
+
+            # Cacti Monitoring (.rrd Safe)
+            curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/cacti/cacti_log.sh | sudo bash
+            ```
+          files: |
+            System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.zip
+            System-Cleanup-Script-${{ steps.tag_version.outputs.NEW_TAG }}.tar.gz
+            System-Cleanup-Script-latest.zip
+            System-Cleanup-Script-latest.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

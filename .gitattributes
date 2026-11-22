@@ -1,10 +1,12 @@
 # Set default behavior to automatically handle line endings
 * text=auto
 
-# Enforce LF line endings for shell scripts, html and markdown
+# Enforce LF line endings for shell scripts, html, markdown and workflows
 *.sh text eol=lf
 *.md text eol=lf
 *.html text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
 
 # Windows batch scripts
 *.bat text eol=crlf

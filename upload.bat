@@ -33,6 +33,7 @@ if %ERRORLEVEL% equ 0 (
     echo.
     echo ===================================================
     echo             Successfully uploaded!
+    echo   GitHub Actions will auto-tag and publish release.
     echo ===================================================
 ) else (
     echo.

@@ -5,6 +5,8 @@
 **লিনাক্স (Ubuntu/Debian) ও Proxmox সার্ভারের অটোমেটিক ডিস্ক ক্লিনআপ এবং লগ অপ্টিমাইজেশন টুলস।**
 
 [![Views (Today / Total)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script.svg?view=today-total&style=for-the-badge&label=Views+(Today+/+Total)&color=22c55e&labelColor=1f2937)](https://hits.sh/github.com/sohag1192/System-Cleanup-Script/)
+[![Latest Release](https://img.shields.io/github/v/release/sohag1192/System-Cleanup-Script?style=for-the-badge&color=blue&logo=github)](https://github.com/sohag1192/System-Cleanup-Script/releases/latest)
+[![Download ZIP](https://img.shields.io/badge/Download-Latest%20ZIP-0284c7?style=for-the-badge&logo=archive&logoColor=white)](https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip)
 [![Live Web Docs](https://img.shields.io/badge/Web%20Portal-লাইভ%20সাইট-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)](https://sohag1192.github.io/System-Cleanup-Script/)
 [![GitHub Stars](https://img.shields.io/github/stars/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=gold)](https://github.com/sohag1192/System-Cleanup-Script/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sohag1192/System-Cleanup-Script?style=for-the-badge&logo=github&color=blue)](https://github.com/sohag1192/System-Cleanup-Script/network/members)
@@ -16,6 +18,8 @@
 
 <p align="center">
   <a href="https://sohag1192.github.io/System-Cleanup-Script/">🌐 <b>লাইভ ওয়েব পোর্টাল</b></a> •
+  <a href="https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip">📦 <b>ডাউনলোড ZIP</b></a> •
+  <a href="https://github.com/sohag1192/System-Cleanup-Script/releases">🏷️ <b>ভার্সন রিলিজ</b></a> •
   <a href="README.md"><b>English</b></a> •
   <a href="README.bn.md"><b>বাংলা (Bengali)</b></a>
 </p>
@@ -138,6 +142,35 @@ sudo /root/cacti_log.sh
 
 > [!IMPORTANT]
 > **RRA / গ্রাফ ডাটা সুরক্ষা:** `cacti/cacti_log.sh` স্ক্রিপ্টটি আপনার Cacti সার্ভারের **`.rrd` গ্রাফ ফাইল** এবং **`rra/` ফোল্ডার** ১০০% অক্ষত রাখবে। আপনার নেটওয়ার্ক ডিভাইসের পূর্ববর্তী ব্যান্ডউইথ হিস্ট্রি সম্পূর্ণ সুরক্ষিত থাকবে!
+
+---
+
+### ৫. 📦 সম্পূর্ণ স্ক্রিপ্ট বান্ডেল ডাউনলোড করুন (ZIP Archive)
+
+আপনি যদি সবগুলো স্ক্রিপ্ট একসাথে জিপ ফাইল হিসেবে ডাউনলোড করতে চান:
+
+**ব্রাউজার থেকে সরাসরি ডাউনলোড:**
+* ⬇️ **[সরাসরি জিপ ডাউনলোড করুন (Latest main.zip)](https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip)**
+* 🏷️ **[সকল রিলিজ ও ট্যাগ দেখুন (GitHub Releases)](https://github.com/sohag1192/System-Cleanup-Script/releases)**
+
+**লিনাক্স টার্মিনাল দিয়ে ডাউনলোড ও আনজিপ করুন:**
+```bash
+# wget ব্যবহার করে:
+wget -O System-Cleanup-Script.zip https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip
+unzip System-Cleanup-Script.zip
+cd System-Cleanup-Script-main
+
+# অথবা curl ব্যবহার করে:
+curl -sSL -o System-Cleanup-Script.zip https://github.com/sohag1192/System-Cleanup-Script/archive/refs/heads/main.zip
+unzip System-Cleanup-Script.zip
+cd System-Cleanup-Script-main
+
+# স্ক্রিপ্টগুলোতে এক্সিকিউট পারমিশন দিন:
+chmod +x ubuntu/*.sh proxmox/*.sh docker/*.sh cacti/*.sh
+
+# যেকোনো স্ক্রিপ্ট রান করুন (যেমন Ubuntu Log Cleaner):
+sudo ./ubuntu/log_cleanup.sh
+```
 
 ---
 
@@ -273,6 +306,15 @@ dos2unix *.sh
 # পদ্ধতি ২: sed ব্যবহার করে (কোনো প্যাকেজ ছাড়া)
 sed -i 's/\r$//' *.sh
 ```
+
+---
+
+## 🏷️ অটোমেটিক রিলিজ ও ভার্সনিং (Automated Releases)
+
+এই রিপোজিটরিতে সম্পূর্ণ অটোমেটেড গিটহাব অ্যাকশনস রিলিজ সিস্টেম যুক্ত করা হয়েছে:
+* **স্বয়ংক্রিয় সেমান্টিক ভার্সন ট্যাগ:** `main` ব্রাঞ্চে কোনো পরিবর্তন পুশ হলেই গিটহাব অ্যাকশন স্বয়ংক্রিয়ভাবে পরবর্তী ভার্সন ট্যাগ (`v1.0.0`, `v1.0.1`, `v1.1.0`) তৈরি করে এবং অফিসিয়াল রিলিজ প্রকাশ করে।
+* **রেডি-টু-ইউজ ZIP ও TAR.GZ বান্ডেল:** প্রতিটি রিলিজে লিনাক্স পারমিশন (`chmod +x`) ও LF লাইন এন্ডিং সম্পন্ন `.zip` এবং `.tar.gz` ফাইল স্বয়ংক্রিয়ভাবে অ্যাটাচ হয়ে যায়।
+* **সহজ ডাউনলোড লিঙ্ক:** যেকোনো সময় `System-Cleanup-Script-latest.zip` লিঙ্কের মাধ্যমে সর্বশেষ আপডেট ডাউনলোড করা যায়।
 
 ---
 
